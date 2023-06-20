@@ -1,23 +1,23 @@
 import logo from './logo.svg';
 import './App.css';
+import RegistrationComponent from './Components/RegistrationComponent/RegistrationComponent';
+import LoginComponent from './Components/LoginComponent/LoginComponent';
+import { useState } from 'react';
+
 
 function App() {
+  const [token,setToken] = useState(localStorage.getItem('accessToken'));
+
+  const handleLogOut =()=>{
+    localStorage.setItem('accessToken','');
+    setToken(localStorage.getItem('accessToken'));
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {token==''? <LoginComponent/> : <button onClick={()=>handleLogOut()}>LogOut</button> }
+      {token}
+      {/* <RegistrationComponent/> */}
     </div>
   );
 }
