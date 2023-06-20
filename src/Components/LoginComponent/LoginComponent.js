@@ -1,8 +1,12 @@
 import axios from 'axios';
 import React, { useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom';
+import Dashboard from '../DashboardComponent/Dashboard';
 
 
 function LoginComponent() {
+
+    const navigate = useNavigate();
     const [email,setEmail] = useState('');
     const [password,setPassword] = useState('');
 
@@ -25,13 +29,20 @@ function LoginComponent() {
         if(token=='')
         {
             axios.post(url,data).then((result)=>{   
-                alert(result.data);
+                // alert(result.data);
                 localStorage.setItem('accessToken', result.data);
+                console.log(localStorage.getItem('accessToken'));
+                navigate("/Dashboard");
                 //redirect to home here
             }).catch((error)=>{
                 alert(error);
             })
         }
+    }
+
+    const handleRegister =()=>
+    {
+        navigate("/Register");
     }
 
   return (
@@ -41,6 +52,7 @@ function LoginComponent() {
         <label>Password</label>
         <input type='password' id='password' placeholder='Enter password'onChange={(e)=>handlePasswordChange(e.target.value)}/>
         <button onClick={()=>handleLogin()}>Login</button>
+        <button onClick={()=>handleRegister()}>New User? Register</button>
     </div>
   )
 }
