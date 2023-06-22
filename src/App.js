@@ -1,7 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import RegistrationComponent from './Components/RegistrationComponent/RegistrationComponent';
-import LoginComponent from './Components/LoginComponent/LoginComponent';
+import LoginComponent from './Components/LoginOrRegComponent/LoginOrRegComponent';
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 
