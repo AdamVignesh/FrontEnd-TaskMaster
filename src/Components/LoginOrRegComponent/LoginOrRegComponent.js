@@ -5,13 +5,24 @@ import { faUser, faLock, faEnvelope,faEyeSlash, faEye, faFile } from '@fortaweso
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './LoginStyles.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Dropdown } from 'react-bootstrap';
+import { Button, Dropdown, Modal } from 'react-bootstrap';
+import AWS, { S3 } from 'aws-sdk';
 
 
 import Dashboard from '../DashboardComponent/Dashboard';
+import { image } from 'fontawesome';
+import ModalComponent from '../ModalComponent/ModalComponent';
+
+const aws_access_key = process.env.REACT_APP_AWS_ACCESS_KEY;
+const aws_secret_key = process.env.REACT_APP_AWS_SECRET_KEY;
+const baseUrl = process.env.REACT_APP_BASE_URL;
+AWS.config.update({
+  accessKeyId: aws_access_key ,
+  secretAccessKey:aws_secret_key,
+  region: 'ap-south-1',
+});
 
 function LoginOrRegComponent() {
-
     const navigate = useNavigate();
     const [showPassword,setShowPassword] = useState(false);
     const [LoginOrReg, setLoginOrReg] = new useState(false);
@@ -21,17 +32,22 @@ function LoginOrRegComponent() {
 
     //reg states
     const [name,setName] = useState('');
-    const [role,setRole] = useState('');
+    const [role,setRole] = useState(null);
     const [file,setFile] = useState();
     const [selectedOption, setSelectedOption] = useState('Your Role');
     const [showHint,setShowHint] = useState(false);
+    const [S3Url,setS3Url] = useState();
+    const [popUpContent,setPopUpContent] = useState();
+    const [popUpTitle,setPopUpTitle] = useState();
 
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const userNameRegex = /^[A-Za-z]+$/;
+    const ProperExtensions=['image/jpg','image/jpeg','image/png',];
 
-    const handleRoleChange = (value)=>{
-        setRole(value);
-    }
     const handleFileChange = (value)=>{
         setFile(value);
+      
     }
     const handleNameChange = (value)=>{
         setName(value);
@@ -42,34 +58,10 @@ function LoginOrRegComponent() {
     const handlePasswordChange = (value)=>{
         setPassword(value);
     }
-
-    const handleLogin = ()=>{
-        const data={
-            Email:email,
-            Password:password,
-        };
-
-        const url = 'https://localhost:7003/api/controller/login';
-        
-        const token = localStorage.getItem('accessToken');
-        if(token=='')
-        {
-            axios.post(url,data).then((result)=>{   
-                // alert(result.data);
-                localStorage.setItem('accessToken', result.data);
-                console.log(localStorage.getItem('accessToken'));
-                navigate("/Dashboard");
-                //redirect to home here
-            }).catch((error)=>{
-                alert(error);
-            })
-        }
-    }
     const togglePasswordVisibility =()=>
     {
         setShowPassword(!showPassword);
     }
-
 
     const handleLoginClick=()=>{
         setLoginOrReg(false);
@@ -80,38 +72,148 @@ function LoginOrRegComponent() {
     }
     const handleOptionChange = (eventKey) => {
         setSelectedOption(eventKey);
+        setRole(eventKey);
       };
 
     const handleMouseEnter = ()=>{
         setShowHint(!showHint);
     }
 
-    const handleRegister=()=>{
+    const handleLogin = (e)=>{
+      e.preventDefault();
+      console.log("in login da");
+        const data={
+            Email:email,
+            Password:password,
+        };
+
+        const url = `${baseUrl}/login`;
+        
+        const token = localStorage.getItem('accessToken');
+        if(token==null)
+        {
+            axios.post(url,data).then((result)=>{   
+                // alert(result.data);
+                localStorage.setItem('accessToken', result.data);
+                console.log(localStorage.getItem('accessToken'));
+                setShowModal(true);
+                setPopUpTitle('Success')
+                setPopUpContent('Successfully Logged In');
+                navigate("/Dashboard");
+            }).catch((error)=>{
+                setShowModal(true);
+                setPopUpTitle('Error')
+                setPopUpContent('Invalid Login');
+            })
+        }
+    }
+  
+    const [showModal, setShowModal] = useState(false);
+
+    const handleCloseModal=()=>{
+      setShowModal(false);
+    }
+    const handleRegister =async(e)=>{
+      e.preventDefault();
+      if (!file){
+        setShowModal(true);
+        setPopUpTitle("Error");
+        setPopUpContent('Choose an Avatar to continue');
+        return;
+      }
+      if(role==null)
+      {
+        setShowModal(true);
+        setPopUpTitle("Error");
+        setPopUpContent('Choose Role');
+        return;
+      }
+      if(!passwordRegex.test(password))
+      {
+        setShowModal(true);
+        setPopUpTitle("Error");
+        setPopUpContent('Password should contain Minimum 8 characters, at least one uppercase letter, one lowercase letter, and one number');
+        return;
+      }
+      if(!emailRegex.test(email))
+      {
+        setShowModal(true);
+        setPopUpTitle("Error");
+        setPopUpContent('Enter proper email address');
+        return;
+      }
+      if(!userNameRegex.test(name) || name.length<3)
+      {
+        setShowModal(true);
+        setPopUpTitle("Error");
+        setPopUpContent('Enter valid UserName. Minimum 3 alphabets');
+        return;
+      }
+      const params = { 
+        Bucket: 'taskmaster-user-avatars', 
+        Key: `${Date.now()}.${file.name}`, 
+        Body: image,
+        ContentType: file.type, 
+      };
+      const s3 = new S3();
+      const { Location } = await s3.upload(params).promise();
+      console.log(Location+"=============================");
+      console.log('uploading to s3-------------', Location);
+      setS3Url(Location);
+      console.log(S3Url);
+
       const data={
           Name:name,
           Email:email,
           Role:role,
-          Password:password,
-          
+          Password:password, 
+          ImgUrl:S3Url,         
       };
+      console.log(data);
+      const RegUrl = `${baseUrl}/register`;
+      console.log(RegUrl + "url");
 
-      const url = 'https://localhost:7003/api/controller/register';
-
-      axios.post(url,data).then((result)=>{   
-          // alert(result.data);
-          navigate("/Dashboard");
+      axios.post('https://localhost:7003/api/controller/register',data).then((result)=>{   
+        console.log(result+" result");
+          setShowModal(true);
+          setPopUpTitle('Success')
+          setPopUpContent('User Registered');
+          if(!showModal)
+          {
+            window.location.reload()
+          }
           //call a method to navigate
       }).catch((error)=>{
-          alert(error);
+        s3.deleteObject(params, function (err, data) {
+          if (data) {
+          console.log("File deleted successfully");
+          }
+          else {
+          console.log("Check if you have sufficient permissions : "+err);
+          }
+          }); 
+          // DELETE FROM THE S3 BUCKET IF NOT REGISTERES SUCCESSFULLY;
+        console.log(error);
+        setShowModal(true);
+        setPopUpTitle("Error");
+        setPopUpContent('User already registered');
       })
-  }
-   
+    }
+    const handleUpload =async()=>{
+      console.log("in handle Upload");
+            
+    }
+    
+
   return (
     <div className={`loginContainer ${LoginOrReg ? 'sign-up-mode' : ''}`}>
       <div className="forms-container">
         <div className="signin-signup">
           <form action="#" className="sign-in-form loginForm">
             <h2 className="title">Log in</h2>
+
+            {/* pop up starts*/}
+            <ModalComponent showModal={showModal} handleCloseModal={handleCloseModal} popUpTitle={popUpTitle} popUpContent={popUpContent}/>
 
             <div className="input-field">
               <FontAwesomeIcon icon={faEnvelope} className='my-auto mx-auto '/>
@@ -121,7 +223,7 @@ function LoginOrRegComponent() {
             <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} onClick={togglePasswordVisibility} className="my-auto mx-auto"/>
             <input className='LoginInput' type={showPassword?"text":"password"}  placeholder="Password"onChange={(e)=>handlePasswordChange(e.target.value)} />
             </div>
-            <button id='btn' className='btn' onClick={()=>handleLogin()}>Log In</button>
+            <button id='btn' className='btn' onClick={(e)=>handleLogin(e)}>Log In</button>
           </form>
           <form action="#" className="sign-up-form loginForm">
             <h2 className="title">Register</h2>
@@ -140,11 +242,9 @@ function LoginOrRegComponent() {
             {/* <div className="input-field"> */}
             <div className="input-field">
               <FontAwesomeIcon icon={faFile} className='my-auto mx-auto'/>
-              <input className='LoginInput my-auto mx-auto w-100' type="file" onChange={(e)=>handleFileChange(e.target.value)} onMouseEnter={(e)=>handleMouseEnter(e.target.value)} onMouseLeave={(e)=>handleMouseEnter(e.target.value)}/>
+              <input className='LoginInput my-auto mx-auto w-100' type="file" accept="image/*" onChange={(e)=>handleFileChange(e.target.files[0])} onMouseEnter={(e)=>handleMouseEnter(e.target.value)} onMouseLeave={(e)=>handleMouseEnter(e.target.value)}/>
             </div>
             {showHint? <span className='avatar'>*Choose Avatar*</span>:''}
-               
-
             <Dropdown onSelect={handleOptionChange} className="w-200">
                 <Dropdown.Toggle variant="dark" id="dropdown-basic">
                     {selectedOption}
@@ -157,7 +257,7 @@ function LoginOrRegComponent() {
                     <Dropdown.Item eventKey="Devops">DEVOPS</Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
-            <button id='btn' className='btn' onClick={()=>handleRegister()}>Register</button>
+            <button id='btn' className='btn' onClick={(e)=>handleRegister(e)}>Register</button>
             
           </form>
         </div>

@@ -6,8 +6,8 @@ function Dashboard() {
     const navigate = useNavigate();
     const [token,setToken] = useState(localStorage.getItem('accessToken'));
     const handleLogOut =()=>{
-        localStorage.setItem('accessToken','');
-        setToken(localStorage.getItem('accessToken'));
+        localStorage.removeItem('accessToken');
+        setToken('');
         navigate("/Login");
       }
 

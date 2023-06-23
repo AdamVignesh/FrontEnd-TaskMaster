@@ -6,6 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import LoginComponent from './Components/LoginOrRegComponent/LoginOrRegComponent';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Dashboard from './Components/DashboardComponent/Dashboard';
+import Protected from './Components/Protected';
+import UnProtected from './Components/UnProtected';
 
 
 const router = createBrowserRouter([
@@ -15,11 +17,17 @@ const router = createBrowserRouter([
   },
   {
     path: "/Login",
-    element: <LoginComponent/>,
+    element: 
+      <Protected>
+        <LoginComponent/>,
+      </Protected>
   },
   {
     path: "/Dashboard",
-    element: <Dashboard/>,
+    element: 
+      <UnProtected>
+        <Dashboard/>,
+      </UnProtected>
   },
 ]);
 
@@ -30,5 +38,6 @@ root.render(
   </React.StrictMode>
 );
 
-
 reportWebVitals();
+
+
