@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { faUser, faLock, faEnvelope,faEyeSlash, faEye, faFile } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -12,6 +12,7 @@ import AWS, { S3 } from 'aws-sdk';
 import Dashboard from '../DashboardComponent/Dashboard';
 import { image } from 'fontawesome';
 import ModalComponent from '../ModalComponent/ModalComponent';
+import { AuthContext } from '../../MyContext';
 
 const aws_access_key = process.env.REACT_APP_AWS_ACCESS_KEY;
 const aws_secret_key = process.env.REACT_APP_AWS_SECRET_KEY;
@@ -78,6 +79,7 @@ function LoginOrRegComponent() {
     const handleMouseEnter = ()=>{
         setShowHint(!showHint);
     }
+    const {invokeStateUpdate} = useContext(AuthContext);
 
     const handleLogin = (e)=>{
       e.preventDefault();
@@ -86,7 +88,6 @@ function LoginOrRegComponent() {
             Email:email,
             Password:password,
         };
-
         const url = `${baseUrl}/login`;
         
         const token = localStorage.getItem('accessToken');
@@ -99,6 +100,7 @@ function LoginOrRegComponent() {
                 setShowModal(true);
                 setPopUpTitle('Success')
                 setPopUpContent('Successfully Logged In');
+                invokeStateUpdate(true);
                 navigate("/Dashboard");
             }).catch((error)=>{
                 setShowModal(true);
