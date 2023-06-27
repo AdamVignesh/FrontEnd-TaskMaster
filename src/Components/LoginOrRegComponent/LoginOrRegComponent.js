@@ -37,9 +37,10 @@ function LoginOrRegComponent() {
     const [file,setFile] = useState();
     const [selectedOption, setSelectedOption] = useState('Your Role');
     const [showHint,setShowHint] = useState(false);
-    const [S3Url,setS3Url] = useState();
+    // const [S3Url,setS3Url] = useState();
     const [popUpContent,setPopUpContent] = useState();
     const [popUpTitle,setPopUpTitle] = useState();
+    const [dpUrl,setDpUrl] = useState('');
 
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -112,6 +113,28 @@ function LoginOrRegComponent() {
   
     const [showModal, setShowModal] = useState(false);
 
+    const uploadToS3 = async () => {
+  try {
+    const params = {
+      Bucket: 'taskmaster-user-avatars',
+      Key: `${Date.now()}.${file.name}`,
+      Body: image,
+      ContentType: file.type,
+    };
+
+    const s3 = new S3();
+    const { Location } = await s3.upload(params).promise();
+
+    console.log(Location + "=============================");
+    console.log('uploading to s3-------------', Location);
+
+    setDpUrl(Location);
+    console.log(dpUrl +dpUrl);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
     const handleCloseModal=()=>{
       setShowModal(false);
     }
@@ -151,25 +174,15 @@ function LoginOrRegComponent() {
         setPopUpContent('Enter valid UserName. Minimum 3 alphabets');
         return;
       }
-      const params = { 
-        Bucket: 'taskmaster-user-avatars', 
-        Key: `${Date.now()}.${file.name}`, 
-        Body: image,
-        ContentType: file.type, 
-      };
-      const s3 = new S3();
-      const { Location } = await s3.upload(params).promise();
-      console.log(Location+"=============================");
-      console.log('uploading to s3-------------', Location);
-      setS3Url(Location);
-      console.log(S3Url);
-
+      
+      await uploadToS3();
+        
       const data={
           Name:name,
           Email:email,
           Role:role,
           Password:password, 
-          ImgUrl:S3Url,         
+          ImgUrl:dpUrl,         
       };
       console.log(data);
       const RegUrl = `${baseUrl}/register`;
@@ -186,26 +199,21 @@ function LoginOrRegComponent() {
           }
           //call a method to navigate
       }).catch((error)=>{
-        s3.deleteObject(params, function (err, data) {
-          if (data) {
-          console.log("File deleted successfully");
-          }
-          else {
-          console.log("Check if you have sufficient permissions : "+err);
-          }
-          }); 
-          // DELETE FROM THE S3 BUCKET IF NOT REGISTERES SUCCESSFULLY;
+        // s3.deleteObject(params, function (err, data) {
+        //   if (data) {
+        //   console.log("File deleted successfully");
+        //   }
+        //   else {
+        //   console.log("Check if you have sufficient permissions : "+err);
+        //   }
+        //   }); 
+        //   // DELETE FROM THE S3 BUCKET IF NOT REGISTERES SUCCESSFULLY;
         console.log(error);
         setShowModal(true);
         setPopUpTitle("Error");
         setPopUpContent('User already registered');
       })
     }
-    const handleUpload =async()=>{
-      console.log("in handle Upload");
-            
-    }
-    
 
   return (
     <div className={`loginContainer ${LoginOrReg ? 'sign-up-mode' : ''}`}>
@@ -259,7 +267,7 @@ function LoginOrRegComponent() {
                     <Dropdown.Item eventKey="Devops">DEVOPS</Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
-            <button id='btn' className='btn' onClick={(e)=>handleRegister(e)}>Register</button>
+            <button id='btn1' className='btn' onClick={(e)=>handleRegister(e)}>Register</button>
             
           </form>
         </div>

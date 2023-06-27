@@ -33,17 +33,19 @@ export const getUserDetails = async () => {
   const baseURL = process.env.REACT_APP_BASE_URL;
   const access_token = localStorage.getItem('accessToken');
   
+  if(access_token!=null){
   try {
     const response = await axios.get(`${baseURL}/getUserDetails`, {
       params: {
         accessToken: access_token
       }
     });
-    
+  
     const data = response.data;
     return data.userDetails;
   } catch (error) {
     console.log(error);
     return null;
+  }
   }
 };

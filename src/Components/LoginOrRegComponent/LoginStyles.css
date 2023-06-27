@@ -133,6 +133,20 @@ body,
   color: #4481eb;
   border-color: #4481eb;
 }
+#btn1
+{
+  width: 150px;
+  background-color: #9f5298;
+  border:#444;
+  height: 49px;
+  border-radius: 49px;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: 0.5s;
+}
 #btn
 {
   width: 150px;
@@ -162,6 +176,10 @@ body,
 }
 
 #btn:hover {
+  border: 3px solid #0d0d0d;
+}
+
+#btn1:hover {
   border: 3px solid #0d0d0d;
 }
 .panels-container {
