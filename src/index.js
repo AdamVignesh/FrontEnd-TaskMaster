@@ -9,6 +9,7 @@ import Dashboard from './Components/DashboardComponent/Dashboard';
 import Protected from './Components/Protected';
 import UnProtected from './Components/UnProtected';
 import { GlobalAuthStateProvider } from './MyContext';
+import Test from './Components/test';
 
 
 const router = createBrowserRouter([
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
         <Dashboard/>,
       </UnProtected>
   },
+  {
+    path:"/Test",
+    element: <Test/>
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

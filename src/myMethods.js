@@ -40,7 +40,6 @@ export const getUserDetails = async () => {
         accessToken: access_token
       }
     });
-  
     const data = response.data;
     return data.userDetails;
   } catch (error) {

@@ -4,6 +4,7 @@ import { getUserDetails } from '../../myMethods';
 import { AuthContext, GlobalAuthStateProvider } from '../../MyContext';
 import FormsModalComponent from '../FormsModalComponent/FormsModalComponent';
 import axios from 'axios';
+import TopBar from '../TopBarComponent/TopBar';
 
 function Dashboard() {
   
@@ -18,8 +19,6 @@ function Dashboard() {
         invokeStateUpdate(false);    
         navigate("/Login");
       }
-
-    
       // var loggedInUser= useContext(AuthContext);
     
     const handleAddProject =() =>{
@@ -41,28 +40,35 @@ function Dashboard() {
       return null;
     }
   };
- 
-  return (
+  const handleProjectClick=()=>{
+    alert("im in");
+  }
+  return(
     <div>
-    Dashboard
-    {myProjects.map((item, index) => (
-        <li key={index}>{JSON.stringify(item.project_Description)}</li>
-      ))}
-    {/* {data.map((item) => (
-        <div>{item}</div>
-      ))} */}
-      
-    <FormsModalComponent show={showFormsModal} onHide={()=>setShowFormsModal(false)}/>
-    <p>User: {loggedInUser ? loggedInUser.userName : ''}</p>
-    <p>email: {loggedInUser ? loggedInUser.email : ''}</p>
-    <p>user id: {loggedInUser ? loggedInUser.id : ''}</p>
+      <TopBar imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName} onClick={handleLogOut}/>
+      <button onClick={handleLogOut}>Logout</button>
 
-    
-    <p>Is Signed In: {isSignedIn ? 'true' : 'false'}</p>
-    <button onClick={handleAddProject}>ADD Project</button>
-    <button onClick={handleLogOut}>Logout</button>
-  </div>
+    </div>
   )
 }
 
 export default Dashboard
+
+/* 
+{myProjects.map((item, index) => (
+        <li key={index} onClick={handleProjectClick}>{JSON.stringify(item.project_Description)}</li>
+      ))}
+    {{data.map((item) => (
+        <div>{item}</div>
+      ))} 
+      
+      <FormsModalComponent show={showFormsModal} onHide={()=>setShowFormsModal(false)}/>
+      <p>User: {loggedInUser ? loggedInUser.userName : ''}</p>
+      <p>email: {loggedInUser ? loggedInUser.email : ''}</p>
+      <p>user id: {loggedInUser ? loggedInUser.id : ''}</p>
+  
+      
+      <p>Is Signed In: {isSignedIn ? 'true' : 'false'}</p>
+      <button onClick={handleAddProject}>ADD Project</button>
+      <button onClick={handleLogOut}>Logout</button>
+*/

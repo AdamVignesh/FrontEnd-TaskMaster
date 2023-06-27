@@ -112,28 +112,28 @@ function LoginOrRegComponent() {
     }
   
     const [showModal, setShowModal] = useState(false);
-
+    var location;
     const uploadToS3 = async () => {
-  try {
-    const params = {
-      Bucket: 'taskmaster-user-avatars',
-      Key: `${Date.now()}.${file.name}`,
-      Body: image,
-      ContentType: file.type,
+      try {
+      
+        const params = {
+          Bucket: 'taskmaster-user-avatars',
+          Key: `${Date.now()}.${file.name}`,
+          Body: file,
+          ContentType: file.type,
+        };
+        const s3 = new S3();
+        const { Location } = await s3.upload(params).promise();
+        location = Location;
+        console.log(Location + "=============================");
+        console.log('uploading to s3-------------', Location);
+
+        setDpUrl(Location);
+        console.log(dpUrl +"dpUrl");
+      } catch (error) {
+        console.log(error);
+      }
     };
-
-    const s3 = new S3();
-    const { Location } = await s3.upload(params).promise();
-
-    console.log(Location + "=============================");
-    console.log('uploading to s3-------------', Location);
-
-    setDpUrl(Location);
-    console.log(dpUrl +dpUrl);
-  } catch (error) {
-    console.log(error);
-  }
-};
 
     const handleCloseModal=()=>{
       setShowModal(false);
@@ -182,13 +182,13 @@ function LoginOrRegComponent() {
           Email:email,
           Role:role,
           Password:password, 
-          ImgUrl:dpUrl,         
+          ImgUrl:location,         
       };
       console.log(data);
       const RegUrl = `${baseUrl}/register`;
-      console.log(RegUrl + "url");
+      console.log(dpUrl + "url");
 
-      axios.post('https://localhost:7003/api/controller/register',data).then((result)=>{   
+      axios.post(RegUrl,data).then((result)=>{   
         console.log(result+" result");
           setShowModal(true);
           setPopUpTitle('Success')
@@ -237,6 +237,7 @@ function LoginOrRegComponent() {
           </form>
           <form action="#" className="sign-up-form loginForm">
             <h2 className="title">Register</h2>
+            
             <div className="input-field">
               <FontAwesomeIcon icon={faUser} className='my-auto mx-auto'/>
               <input className='LoginInput' type="text" placeholder="Username"onChange={(e)=>handleNameChange(e.target.value)} />
