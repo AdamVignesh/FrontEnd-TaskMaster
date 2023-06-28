@@ -1,0 +1,20 @@
+  .sidebar {
+    flex-basis: 15%;
+    background-color: #f0f0f0;
+  }
+  
+  .sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+  }
+  
+  .sidebar-menu-icon {
+    margin-right: 10px;
+  }

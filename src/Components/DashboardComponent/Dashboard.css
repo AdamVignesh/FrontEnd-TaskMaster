@@ -1,0 +1,27 @@
+*{
+    font-family: "Poppins", sans-serif;
+}
+.parent-container {
+    display: flex;
+  }
+  
+  .child-div {
+    flex: 1;
+    border: 1px solid #000;
+    padding: 10px;
+  }
+  
+  .child-div2 {
+    flex-basis: 60%;
+  }
+  
+  .child-div3 {
+    flex-basis: 25%;
+    height: 100vh;
+  }
+  .projectCardsParent{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  

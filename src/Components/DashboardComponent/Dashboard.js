@@ -4,7 +4,13 @@ import { getUserDetails } from '../../myMethods';
 import { AuthContext, GlobalAuthStateProvider } from '../../MyContext';
 import FormsModalComponent from '../FormsModalComponent/FormsModalComponent';
 import axios from 'axios';
+
 import TopBar from '../TopBarComponent/TopBar';
+import './Dashboard.css';
+import SideBar from '../SideBarComponent/SideBar';
+import CardComponent from '../CardComponent/CardComponent';
+import { Col, Container, Row } from 'react-bootstrap';
+
 
 function Dashboard() {
   
@@ -26,7 +32,9 @@ function Dashboard() {
     }
 
     useEffect(()=>{
-      getMyProjects();
+      
+        getMyProjects();
+      
   },[isSignedIn]);
   let projects ='';
   const getMyProjects = async () => {
@@ -46,8 +54,23 @@ function Dashboard() {
   return(
     <div>
       <TopBar imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName} onClick={handleLogOut}/>
-      <button onClick={handleLogOut}>Logout</button>
 
+      <div className="parent-container">
+          
+        <SideBar/>
+        <div className="child-div child-div2">
+        <Container>
+          <Row>
+            {myProjects.map((item, index) => (
+            <Col key={index} lg={6} md={6} sm={12}>
+                <CardComponent title={item.project_Title} />
+                </Col>
+                ))}
+          </Row>
+        </Container>
+        </div>
+        <div className="child-div child-div3">Third Div (30%)</div>
+     </div>
     </div>
   )
 }
