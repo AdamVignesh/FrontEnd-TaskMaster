@@ -8,6 +8,9 @@ export const AuthContext = createContext();
 export const GlobalAuthStateProvider = ({children}) => {
     const [isSignedIn,setIsSignedIn] = useState(false);
     const [loggedInUser,setLoggedInUser] = useState();
+    const [invokeProjects,setInvokeProjects] = useState(false);
+    const [showFormsModal,setShowFormsModal] = useState(false);
+
 
     const getUserDataIfExists = async () => {
             const user = await getUserDetails();
@@ -16,7 +19,9 @@ export const GlobalAuthStateProvider = ({children}) => {
                 setIsSignedIn(true);
             }
     }
-
+    const InvokeProjectsToggle = ()=>{
+        setInvokeProjects(!invokeProjects);
+    }
     const invokeStateUpdate = (value) => {
         setIsSignedIn(value);
     }
@@ -28,7 +33,12 @@ export const GlobalAuthStateProvider = ({children}) => {
     const globalStateContext = {
         loggedInUser,
         isSignedIn,
-        invokeStateUpdate
+        invokeStateUpdate,
+        setShowFormsModal,
+        showFormsModal,
+        invokeProjects,
+        InvokeProjectsToggle
+
     }
 
     return (

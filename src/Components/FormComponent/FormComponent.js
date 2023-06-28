@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../MyContext';
 import axios from 'axios';
 
@@ -10,8 +10,9 @@ function FormComponent() {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
-    const {loggedInUser,isSignedIn,invokeStateUpdate} = useContext(AuthContext);
+    const {loggedInUser,InvokeProjectsToggle,setShowFormsModal} = useContext(AuthContext);
 
+    const navigate = useNavigate();
     // Handle form submission
     // process.env.REACT_APP_BASE_URL;
     const base_URL = process.env.REACT_APP_PROJECT_BASE_URL;
@@ -24,14 +25,9 @@ function FormComponent() {
             User_Id: loggedInUser.id    
         };
         axios.post(base_URL,data).then((result)=>{   
-            // alert(result.data);            
-            // setShowModal(true);
-            // setPopUpTitle('Success')
-            // setPopUpContent('Successfully Logged In');
-            // invokeStateUpdate(true);
-            alert(result.data);
-            alert("added project");
-            // Navigate("/Dashboard");
+            setShowFormsModal(false);
+            InvokeProjectsToggle();
+           // navigate("/test");
         }).catch((error)=>{
             alert(error);
             console.log(error);

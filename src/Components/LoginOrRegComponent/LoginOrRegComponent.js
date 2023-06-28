@@ -44,9 +44,9 @@ function LoginOrRegComponent() {
 
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const userNameRegex = /^[A-Za-z]+$/;
-    const ProperExtensions=['image/jpg','image/jpeg','image/png',];
+    const userNameRegex = /^[A-Za-z]{3}[A-Za-z0-9]*$/;
 
+    
     const handleFileChange = (value)=>{
         setFile(value);
       
@@ -66,6 +66,7 @@ function LoginOrRegComponent() {
     }
 
     const handleLoginClick=()=>{
+          
         setLoginOrReg(false);
     }
     const handleRegClick=()=>{

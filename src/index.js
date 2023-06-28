@@ -10,6 +10,7 @@ import Protected from './Components/Protected';
 import UnProtected from './Components/UnProtected';
 import { GlobalAuthStateProvider } from './MyContext';
 import Test from './Components/test';
+import SelectedProjectComponent from './Components/ProjectDetailsComponent/ProjectDetailsComponent';
 
 
 const router = createBrowserRouter([
@@ -34,7 +35,12 @@ const router = createBrowserRouter([
   {
     path:"/Test",
     element: <Test/>
+  },
+  {
+    path:"/ProjectDetails",
+    element:<SelectedProjectComponent/>
   }
+
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

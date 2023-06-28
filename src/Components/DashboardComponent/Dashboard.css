@@ -17,11 +17,9 @@
   
   .child-div3 {
     flex-basis: 25%;
-    height: 100vh;
   }
   .projectCardsParent{
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-  

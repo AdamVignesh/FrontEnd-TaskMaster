@@ -1,9 +1,19 @@
 import React from 'react'
 import { Card } from 'react-bootstrap'
+import SelectedProjectComponent from '../ProjectDetailsComponent/ProjectDetailsComponent';
+import { useNavigate } from 'react-router-dom';
+
 
 function CardComponent(props) {
+
+  const navigate = useNavigate();
+
+  const handleProjectClick=()=>{
+
+    navigate('/ProjectDetails',{state:{title:props.title,description:props.description}});
+  }
   return (
-    <Card border="primary" className='mb-4' >
+    <Card onClick={handleProjectClick} border="primary" className='mb-4' >
         <Card.Header>{props.title}</Card.Header>
         <Card.Body>
           <Card.Title>Primary Card Title</Card.Title>

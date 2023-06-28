@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { getUserDetails } from '../../myMethods';
 import { AuthContext, GlobalAuthStateProvider } from '../../MyContext';
-import FormsModalComponent from '../FormsModalComponent/FormsModalComponent';
 import axios from 'axios';
 
 import TopBar from '../TopBarComponent/TopBar';
@@ -10,18 +9,18 @@ import './Dashboard.css';
 import SideBar from '../SideBarComponent/SideBar';
 import CardComponent from '../CardComponent/CardComponent';
 import { Col, Container, Row } from 'react-bootstrap';
+import ModalComponent from '../ModalComponent/ModalComponent';
+import FormComponent from '../FormComponent/FormComponent';
 
 
 function Dashboard() {
   
     const navigate = useNavigate();
-    const {loggedInUser,isSignedIn,invokeStateUpdate} = useContext(AuthContext);
-    const [showFormsModal,setShowFormsModal] = useState(false);
-    const [token,setToken] = useState(localStorage.getItem('accessToken'));
+    const {loggedInUser,isSignedIn,invokeProjects,invokeStateUpdate,showFormsModal,setShowFormsModal} = useContext(AuthContext);
     const [myProjects,setMyProjects] = useState([]);
+
     const handleLogOut =()=>{
         localStorage.removeItem('accessToken');
-        setToken('');
         invokeStateUpdate(false);    
         navigate("/Login");
       }
@@ -30,19 +29,23 @@ function Dashboard() {
     const handleAddProject =() =>{
       setShowFormsModal(true);
     }
-
     useEffect(()=>{
-      
+      if(loggedInUser && loggedInUser.id)
+      {
         getMyProjects();
-      
-  },[isSignedIn]);
-  let projects ='';
+      }
+  },[loggedInUser,invokeProjects]);
+
+  
   const getMyProjects = async () => {
+    let projects =[];
     const base_URL = process.env.REACT_APP_PROJECT_BASE_URL;
     try {
       const response = await axios.get(`${base_URL}/${loggedInUser?.id}`)
       projects = response.data;
+      console.log("in projects success");
       setMyProjects(projects.projects);
+      console.log(projects);
     } catch (error) {
       console.log(error);
       return null;
@@ -56,19 +59,23 @@ function Dashboard() {
       <TopBar imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName} onClick={handleLogOut}/>
 
       <div className="parent-container">
-          
-        <SideBar/>
+
+        <ModalComponent showModal={showFormsModal} popUpTitle="Add Project" popUpContent={<FormComponent/>} handleCloseModal={()=>setShowFormsModal(false)}/>
+    
+        <SideBar handleAddProjectClick={handleAddProject}/>
+ 
         <div className="child-div child-div2">
         <Container>
           <Row>
-            {myProjects.map((item, index) => (
-            <Col key={index} lg={6} md={6} sm={12}>
-                <CardComponent title={item.project_Title} />
+            {myProjects.slice().reverse().map((item, index) => (
+            <Col lg={6} md={6} sm={12}>
+                <CardComponent onClick={handleProjectClick} key={index} title={item.project_Title} decription={item.project_Description} />
                 </Col>
                 ))}
           </Row>
         </Container>
         </div>
+
         <div className="child-div child-div3">Third Div (30%)</div>
      </div>
     </div>

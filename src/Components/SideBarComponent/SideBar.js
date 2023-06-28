@@ -1,8 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import './SideBar.css'
+import { AuthContext } from '../../MyContext';
 
-function SideBar() {
+function SideBar(props) {
+
+  const {loggedInUser,isSignedIn,invokeStateUpdate} = useContext(AuthContext);
+
+  const handleAddProject = ()=>{
+    props.handleAddProjectClick();
+  }
+
   return (
     <div className="sidebar">
             <ul className="sidebar-menu">
@@ -18,10 +26,12 @@ function SideBar() {
                 {/* <FaUser className="sidebar-menu-icon" /> */}
                 <p>Dashboard</p>
               </li>
-              <li className="sidebar-menu-item">
+              {loggedInUser?.role=="Manager"? 
+              <li  className="sidebar-menu-item">
                 {/* <FaCog className="sidebar-menu-icon" /> */}
-                <p>Dashboard</p>
-              </li>
+                <button onClick={handleAddProject}>Add Project</button>
+              </li>:null}
+              
             </ul>
           </div>
   )
