@@ -25,7 +25,7 @@ function DropdownComponent(props) {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu className='dropdown'>
-                    <Dropdown.Item eventKey="Manager">MANAGER</Dropdown.Item>
+                    {props.showManagerRole==null?<Dropdown.Item eventKey="Manager">MANAGER</Dropdown.Item>:null}
                     <Dropdown.Item eventKey="UI/UX Designer">UI/UX DESIGNER</Dropdown.Item>
                     <Dropdown.Item eventKey="Developer">DEVELOPER</Dropdown.Item>
                     <Dropdown.Item eventKey="Devops">DEVOPS</Dropdown.Item>

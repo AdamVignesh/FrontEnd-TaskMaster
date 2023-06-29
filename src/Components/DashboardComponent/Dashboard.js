@@ -37,8 +37,9 @@ function Dashboard() {
   },[loggedInUser,invokeProjects]);
 
   
+  const extractedProjects = [];
   const getMyProjects = async () => {
-      let projects =[];
+    var projects =[];
       if(loggedInUser.role =="Manager")
       {
         const base_URL = process.env.REACT_APP_PROJECT_BASE_URL;
@@ -46,8 +47,8 @@ function Dashboard() {
           const response = await axios.get(`${base_URL}/${loggedInUser?.id}`)
           projects = response.data;
           console.log("in projects success");
+         
           setMyProjects(projects.projects);
-          console.log(projects);
         } 
         catch (error) {
           console.log(error);
@@ -56,13 +57,13 @@ function Dashboard() {
       }
       else
       {
+        let i=0;
         const base_URL = process.env.REACT_APP_GET_USER_PROJECTS;
         try {
           const response = await axios.get(`${base_URL}/${loggedInUser?.id}`)
           projects = response.data.projects;
           console.log("in projects success");
-          setMyProjects(projects);
-          console.log(response.data);
+          setMyProjects(projects);  
         } 
         catch (error) {
           console.log(error);
@@ -79,7 +80,6 @@ function Dashboard() {
       <TopBar imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName} onClick={handleLogOut}/>
 
       <div className="parent-container">
-
         <ModalComponent showModal={showFormsModal} popUpTitle="Add Project" popUpContent={<FormComponent/>} handleCloseModal={()=>setShowFormsModal(false)}/>
     
         <SideBar handleAddProjectClick={handleAddProject}/>

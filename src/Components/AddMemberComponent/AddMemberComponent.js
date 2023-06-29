@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react'
 import { Dropdown } from 'react-bootstrap'
 import DropdownComponent from '../DropdownComponent/DropdownComponent'
 import axios from 'axios';
+import { AuthContext } from '../../MyContext';
 
 function AddMemberComponent(props) {
 
@@ -10,9 +11,12 @@ function AddMemberComponent(props) {
     const [showUsers,setShowUsers] = useState(false);
     const [selectedMembers,setSelectedMembers] = useState([]);
     
+    const {setShowFormsModal,role} = useContext(AuthContext);
+
+    
     const getUsersWithRole = async(role) => {
         try {
-            const response = await axios.get(`${base_URL}${role}`)
+            const response = await axios.get(`${base_URL}${role}&&project_id=${props.id}`)
             const usersArray = response.data;
             setShowUsers(true);
             console.log(usersArray.userDetails);
@@ -26,6 +30,7 @@ function AddMemberComponent(props) {
       };
 
       const handleNameClick = (userName)=>{
+
         if(selectedMembers.includes(userName))
         {
             const filteredArray = selectedMembers.filter((value) => value !== userName);
@@ -45,6 +50,7 @@ function AddMemberComponent(props) {
         };
         axios.post(AddMembersURL,data).then((result)=>{   
             alert("added successfully");
+            setShowFormsModal(false);
           }).catch((error)=>{
             console.log(error);
           })
@@ -53,10 +59,13 @@ function AddMemberComponent(props) {
 
   return (
     <div>
-        <DropdownComponent dropdownDisplay="Choose Role" getUsersWithRole={getUsersWithRole}/>
-        {users.map((item, index) =>(
+        <DropdownComponent showManagerRole='false' dropdownDisplay="Choose Role" getUsersWithRole={getUsersWithRole}/>
+        {!users.length && role ==null?users.map((item, index) =>(
             <p onClick={()=>handleNameClick(item.id)}>{item.userName}</p>
-        ))}
+        )):`No Users left in the selected ${role} role`}
+
+
+    
         {selectedMembers.length? 
         <div>
             {selectedMembers}
