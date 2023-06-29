@@ -38,19 +38,39 @@ function Dashboard() {
 
   
   const getMyProjects = async () => {
-    let projects =[];
-    const base_URL = process.env.REACT_APP_PROJECT_BASE_URL;
-    try {
-      const response = await axios.get(`${base_URL}/${loggedInUser?.id}`)
-      projects = response.data;
-      console.log("in projects success");
-      setMyProjects(projects.projects);
-      console.log(projects);
-    } catch (error) {
-      console.log(error);
-      return null;
+      let projects =[];
+      if(loggedInUser.role =="Manager")
+      {
+        const base_URL = process.env.REACT_APP_PROJECT_BASE_URL;
+        try {
+          const response = await axios.get(`${base_URL}/${loggedInUser?.id}`)
+          projects = response.data;
+          console.log("in projects success");
+          setMyProjects(projects.projects);
+          console.log(projects);
+        } 
+        catch (error) {
+          console.log(error);
+          return null;
+        }
+      }
+      else
+      {
+        const base_URL = process.env.REACT_APP_GET_USER_PROJECTS;
+        try {
+          const response = await axios.get(`${base_URL}/${loggedInUser?.id}`)
+          projects = response.data.projects;
+          console.log("in projects success");
+          setMyProjects(projects);
+          console.log(response.data);
+        } 
+        catch (error) {
+          console.log(error);
+          return null;
+        }
+        
+      }
     }
-  };
   const handleProjectClick=()=>{
     alert("im in");
   }
@@ -67,9 +87,9 @@ function Dashboard() {
         <div className="child-div child-div2">
         <Container>
           <Row>
-            {myProjects.slice().reverse().map((item, index) => (
+            {myProjects?.slice().reverse().map((item, index) => (
             <Col lg={6} md={6} sm={12}>
-                <CardComponent onClick={handleProjectClick} key={index} title={item.project_Title} decription={item.project_Description} />
+                <CardComponent onClick={handleProjectClick} key={index}  id={item.project_id} title={item.project_Title} description={item.project_Description} />
                 </Col>
                 ))}
           </Row>

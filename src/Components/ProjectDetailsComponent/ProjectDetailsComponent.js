@@ -7,7 +7,7 @@ import AddMemberComponent from '../AddMemberComponent/AddMemberComponent';
 function ProjectDetailsComponent() {
 
   const location = useLocation();
-  const {title} = location.state;
+  const {title,id,description} = location.state;
   
   const {showFormsModal,setShowFormsModal} = useContext(AuthContext);
 
@@ -17,8 +17,10 @@ function ProjectDetailsComponent() {
   return (
     <div>
       {title}
+      {id}
+      {description}
       <button onClick={handleAddMembers}>Add Members</button>
-      <ModalComponent showModal={showFormsModal} popUpTitle="Add Members" popUpContent={<AddMemberComponent/>} handleCloseModal={()=>setShowFormsModal(false)}/>
+      <ModalComponent showModal={showFormsModal} popUpTitle="Add Members" popUpContent={<AddMemberComponent id={id}/>} handleCloseModal={()=>setShowFormsModal(false)}/>
     </div>
   )
 }

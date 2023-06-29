@@ -8,7 +8,7 @@ function ModalComponent(props) {
               <Modal.Title>{props.popUpTitle}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>{props.popUpContent}</p>
+              {props.popUpContent}
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={props.handleCloseModal}>

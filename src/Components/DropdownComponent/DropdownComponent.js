@@ -12,8 +12,11 @@ function DropdownComponent(props) {
     const handleOptionChange = (eventKey) => {
         setSelectedOption(eventKey);
         invokeRoleChange(eventKey);
-        //axios call to get all users of this role,
-        //set a state to display the users
+        if(props.getUsersWithRole)
+        {
+            props.getUsersWithRole(eventKey);
+        }
+        
       };
   return (
     <Dropdown onSelect={handleOptionChange} className="w-250">
