@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import { useLocation } from 'react-router-dom';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import { AuthContext } from '../../MyContext';
+import AddMemberComponent from '../AddMemberComponent/AddMemberComponent';
 
 function ProjectDetailsComponent() {
 
@@ -17,7 +18,7 @@ function ProjectDetailsComponent() {
     <div>
       {title}
       <button onClick={handleAddMembers}>Add Members</button>
-      <ModalComponent showModal={showFormsModal} popUpTitle="Add Members" popUpContent="members" handleCloseModal={()=>setShowFormsModal(false)}/>
+      <ModalComponent showModal={showFormsModal} popUpTitle="Add Members" popUpContent={<AddMemberComponent/>} handleCloseModal={()=>setShowFormsModal(false)}/>
     </div>
   )
 }

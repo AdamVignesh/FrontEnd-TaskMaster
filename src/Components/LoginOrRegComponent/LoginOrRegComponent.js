@@ -13,6 +13,7 @@ import Dashboard from '../DashboardComponent/Dashboard';
 import { image } from 'fontawesome';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import { AuthContext } from '../../MyContext';
+import DropdownComponent from '../DropdownComponent/DropdownComponent';
 
 const aws_access_key = process.env.REACT_APP_AWS_ACCESS_KEY;
 const aws_secret_key = process.env.REACT_APP_AWS_SECRET_KEY;
@@ -33,7 +34,6 @@ function LoginOrRegComponent() {
 
     //reg states
     const [name,setName] = useState('');
-    const [role,setRole] = useState(null);
     const [file,setFile] = useState();
     const [selectedOption, setSelectedOption] = useState('Your Role');
     const [showHint,setShowHint] = useState(false);
@@ -41,6 +41,9 @@ function LoginOrRegComponent() {
     const [popUpContent,setPopUpContent] = useState();
     const [popUpTitle,setPopUpTitle] = useState();
     const [dpUrl,setDpUrl] = useState('');
+
+  const {role,invokeRoleChange} = useContext(AuthContext);
+
 
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -73,10 +76,6 @@ function LoginOrRegComponent() {
         console.log("in hanlde reg");
         setLoginOrReg(true);
     }
-    const handleOptionChange = (eventKey) => {
-        setSelectedOption(eventKey);
-        setRole(eventKey);
-      };
 
     const handleMouseEnter = ()=>{
         setShowHint(!showHint);
@@ -257,18 +256,7 @@ function LoginOrRegComponent() {
               <input className='LoginInput my-auto mx-auto w-100' type="file" accept="image/*" onChange={(e)=>handleFileChange(e.target.files[0])} onMouseEnter={(e)=>handleMouseEnter(e.target.value)} onMouseLeave={(e)=>handleMouseEnter(e.target.value)}/>
             </div>
             {showHint? <span className='avatar'>*Choose Avatar*</span>:''}
-            <Dropdown onSelect={handleOptionChange} className="w-200">
-                <Dropdown.Toggle variant="dark" id="dropdown-basic">
-                    {selectedOption}
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu className='dropdown'>
-                    <Dropdown.Item eventKey="Manager">MANAGER</Dropdown.Item>
-                    <Dropdown.Item eventKey="UI/UX Designer">UI/UX DESIGNER</Dropdown.Item>
-                    <Dropdown.Item eventKey="Developer">DEVELOPER</Dropdown.Item>
-                    <Dropdown.Item eventKey="Devops">DEVOPS</Dropdown.Item>
-                </Dropdown.Menu>
-            </Dropdown>
+            <DropdownComponent dropdownDisplay="Your Role"/>
             <button id='btn1' className='btn' onClick={(e)=>handleRegister(e)}>Register</button>
             
           </form>

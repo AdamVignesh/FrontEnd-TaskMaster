@@ -10,6 +10,8 @@ export const GlobalAuthStateProvider = ({children}) => {
     const [loggedInUser,setLoggedInUser] = useState();
     const [invokeProjects,setInvokeProjects] = useState(false);
     const [showFormsModal,setShowFormsModal] = useState(false);
+    const [role,setRole] = useState(null);
+    const [selectedOption, setSelectedOption] = useState('');
 
 
     const getUserDataIfExists = async () => {
@@ -25,10 +27,16 @@ export const GlobalAuthStateProvider = ({children}) => {
     const invokeStateUpdate = (value) => {
         setIsSignedIn(value);
     }
+    
+    const invokeRoleChange=(value)=>{
+        setRole(value);
+    }
+
     useEffect(()=>{
         // console.log("in effexr");
         getUserDataIfExists();
     },[isSignedIn]);
+
 
     const globalStateContext = {
         loggedInUser,
@@ -37,8 +45,9 @@ export const GlobalAuthStateProvider = ({children}) => {
         setShowFormsModal,
         showFormsModal,
         invokeProjects,
-        InvokeProjectsToggle
-
+        InvokeProjectsToggle,
+        invokeRoleChange,
+        role,
     }
 
     return (
