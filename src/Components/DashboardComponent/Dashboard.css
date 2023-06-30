@@ -13,6 +13,8 @@
   
   .child-div2 {
     flex-basis: 60%;
+    height: 100vh;
+    overflow-y: scroll;
   }
   
   .child-div3 {

@@ -15,9 +15,7 @@
     color: #9f5298;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
-.searchBar{
-    width: 200px;
-}
+
 @media (max-width: 489px) 
 {
     .searchBar{

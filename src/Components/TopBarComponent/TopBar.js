@@ -7,8 +7,11 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Navigate, useNavigate } from 'react-router-dom';
-import './TopBar.css';
+import debounce from 'lodash.debounce';
+
 import { AuthContext } from '../../MyContext';
+import './TopBar.css';
+
 
 function TopBar(props) {
 
@@ -27,13 +30,13 @@ function TopBar(props) {
       />{' '}
       TASK MASTER
     </Navbar.Brand>
-    <InputGroup className="m-3 searchBar">
-          <FormControl type="text" placeholder="Search projects" style={{borderRadius:"30px"}} />
-      </InputGroup>
-    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-    <Navbar.Collapse id="responsive-navbar-nav">
-      <Nav className="me-auto">
+    <Nav>
+          <h5>Hey {props.name}</h5>
+          <img src={props.imageUrl} alt={props.name} height="40"width="40" style={{borderRadius:"50%"}}  id="collasible-nav-dropdown"/>
+        
       </Nav>
+    {/* <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+    <Navbar.Collapse id="responsive-navbar-nav">
       <Nav>
         <Nav.Link onClick={()=>navigate("/Dashboard")}>Dashboard</Nav.Link>
         <Nav.Link eventKey={2} href="#memes">
@@ -47,7 +50,7 @@ function TopBar(props) {
             Another action
           </NavDropdown.Item>
         </NavDropdown>
-    </Navbar.Collapse>
+    </Navbar.Collapse> */}
   </Container>
 </Navbar>
 

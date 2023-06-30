@@ -9,7 +9,7 @@ function ProjectDetailsComponent() {
   const location = useLocation();
   const {title,id,description} = location.state;
   
-  const {showFormsModal,setShowFormsModal} = useContext(AuthContext);
+  const {showFormsModal,setShowFormsModal,loggedInUser} = useContext(AuthContext);
 
   const handleAddMembers=()=>{
     setShowFormsModal(true);
@@ -19,7 +19,7 @@ function ProjectDetailsComponent() {
       {title}
       {id}
       {description}
-      <button onClick={handleAddMembers}>Add Members</button>
+      {loggedInUser && loggedInUser?.role=='Manager'?<button onClick={handleAddMembers}>Add Members</button>:null}
       <ModalComponent showModal={showFormsModal} popUpTitle="Add Members" popUpContent={<AddMemberComponent id={id}/>} handleCloseModal={()=>setShowFormsModal(false)}/>
     </div>
   )
