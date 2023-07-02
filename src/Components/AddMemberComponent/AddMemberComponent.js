@@ -57,15 +57,33 @@ function AddMemberComponent(props) {
         
       };
 
+      const roleCheck =()=>{
+        if(role!=null)
+        {
+            if(users.length)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else 
+        {
+            return true;
+        }
+      }
+
   return (
     <div>
         <DropdownComponent showManagerRole='false' dropdownDisplay="Choose Role" getUsersWithRole={getUsersWithRole}/>
-        {!users.length && role ==null?users.map((item, index) =>(
+        {roleCheck()?users.map((item, index) =>(
             <p onClick={()=>handleNameClick(item.id)}>{item.userName}</p>
         )):`No Users left in the selected ${role} role`}
 
-
-    
+            
+            
         {selectedMembers.length? 
         <div>
             {selectedMembers}

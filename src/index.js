@@ -45,11 +45,9 @@ const router = createBrowserRouter([
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
     <GlobalAuthStateProvider>
     <RouterProvider router={router} />
   </GlobalAuthStateProvider>
-  </React.StrictMode>
 );
 
 reportWebVitals();
