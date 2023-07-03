@@ -1,77 +1,119 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from 'uuid';
+import { AuthContext } from "../../MyContext";
 
-const itemsFromBackend = [
-    { id: uuidv4(), content: "First task" },
-    { id: uuidv4(), content: "Second task" },
-    { id: uuidv4(), content: "Third task" },
-    { id: uuidv4(), content: "Fourth task" },
-    { id: uuidv4(), content: "Fifth task" }
-  ];
+// const itemsFromBackend = [
+//     { id: uuidv4(), content: "First task" },
+//     { id: uuidv4(), content: "Second task" },
+//     { id: uuidv4(), content: "Third task" },
+//     { id: uuidv4(), content: "Fourth task" },
+//     { id: uuidv4(), content: "Fifth task" }
+//   ];
   
-  const columnsFromBackend = {
-    [uuidv4()]: {
-      name: "Requested",
-      items: itemsFromBackend
-    },
-    [uuidv4()]: {
-      name: "To do",
-      items: []
-    },
-    [uuidv4()]: {
-      name: "In Progress",
-      items: []
-    },
-    [uuidv4()]: {
-      name: "Done",
-      items: []
-    }
-  };
+ 
   
-  const onDragEnd = (result, columns, setColumns) => {
-    if (!result.destination) return;
-    const { source, destination } = result;
   
-    if (source.droppableId !== destination.droppableId) {
-      const sourceColumn = columns[source.droppableId];
-      const destColumn = columns[destination.droppableId];
-      const sourceItems = [...sourceColumn.items];
-      const destItems = [...destColumn.items];
-      const [removed] = sourceItems.splice(source.index, 1);
-      destItems.splice(destination.index, 0, removed);
-      setColumns({
-        ...columns,
-        [source.droppableId]: {
-          ...sourceColumn,
-          items: sourceItems
+function KanbanBoardComponent(props) {
+    
+    const {invokeGetTasks,getTasks} = useContext(AuthContext);
+    const [columnsFromBackend,setColumnsFromBackend] = useState({
+        "one": {
+          name: "Assigned",
+          items: []
         },
-        [destination.droppableId]: {
-          ...destColumn,
-          items: destItems
+        "two": {
+            name: "To do",
+            items: []
+        },
+        "three": {
+            name: "In Progress",
+            items: []
+        },
+        
+        "four": {
+          name: "Done",
+          items: []
         }
-      });
-    } else {
-      const column = columns[source.droppableId];
-      const copiedItems = [...column.items];
-      const [removed] = copiedItems.splice(source.index, 1);
-      copiedItems.splice(destination.index, 0, removed);
-      setColumns({
-        ...columns,
-        [source.droppableId]: {
-          ...column,
-          items: copiedItems
-        }
-      });
-    }
-  };
-function KanbanBoardComponent() {
+    });
+    
     const [columns, setColumns] = useState(columnsFromBackend);
-    return (
-      <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
-        <DragDropContext
-          onDragEnd={result => onDragEnd(result, columns, setColumns)}
-        >
+
+    const onDragEnd = (result, columns, setColumns) => {
+        if (!result.destination) return;
+        const { source, destination } = result;
+      
+        if (source.droppableId !== destination.droppableId) {
+          const sourceColumn = columns[source.droppableId];
+          const destColumn = columns[destination.droppableId];
+          const sourceItems = [...sourceColumn.items];
+          const destItems = [...destColumn.items];
+          const [removed] = sourceItems.splice(source.index, 1);
+          destItems.splice(destination.index, 0, removed);
+          setColumns({
+            ...columns,
+            [source.droppableId]: {
+              ...sourceColumn,
+              items: sourceItems
+            },
+            [destination.droppableId]: {
+              ...destColumn,
+              items: destItems
+            }
+          });
+        } else {
+          const column = columns[source.droppableId];
+          const copiedItems = [...column.items];
+          const [removed] = copiedItems.splice(source.index, 1);
+          copiedItems.splice(destination.index, 0, removed);
+          setColumns({
+            ...columns,
+            [source.droppableId]: {
+              ...column,
+              items: copiedItems
+            }
+          });
+        }
+      };
+
+    const getTasksOfThisProject=async()=>{
+        console.log(props.id);
+        const TasksOfThisProjectURL = process.env.REACT_APP_GET_TASKS_OF_PROJECT;
+        try {
+            const response = await axios.get(`${TasksOfThisProjectURL}${props.id}`)
+            // projects = response.data;
+            const temp = await response.data;
+            console.log(temp);
+            const updatedTemp = 
+            temp?.map((item) => (
+                {
+                    ...item,
+                    draggableId:uuidv4()
+                }
+            ))
+            const updatedColumns = { ...columnsFromBackend };
+
+            updatedColumns.one.items = updatedTemp;
+            setColumnsFromBackend(updatedColumns);
+
+            invokeGetTasks(false);
+
+          } 
+          catch (error) {
+            console.log("error in kanban board"+error);
+            return null;
+          }
+    }
+
+    useEffect(() => {
+        getTasksOfThisProject();
+      },[getTasks]);
+      console.log(columnsFromBackend);
+    
+      return (
+          <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
+        <DragDropContext onDragEnd={result => onDragEnd(result, columns, setColumns)}>
           {Object.entries(columns).map(([columnId, column], index) => {
             return (
               <div
@@ -102,8 +144,8 @@ function KanbanBoardComponent() {
                           {column.items.map((item, index) => {
                             return (
                               <Draggable
-                                key={item.id}
-                                draggableId={item.id}
+                                key={item?.draggableId}
+                                draggableId={item?.draggableId}
                                 index={index}
                               >
                                 {(provided, snapshot) => {
@@ -124,7 +166,8 @@ function KanbanBoardComponent() {
                                         ...provided.draggableProps.style
                                       }}
                                     >
-                                      {item.content}
+                                      {item?.task_title}
+                                      {item?.draggableId}
                                     </div>
                                   );
                                 }}

@@ -1,18 +1,21 @@
 import React, { useContext, useState } from 'react'
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import { AuthContext } from '../../MyContext';
 import AddMemberComponent from '../AddMemberComponent/AddMemberComponent';
 import KanbanBoardComponent from '../KanbanBoardComponent/KanbanBoardComponent'; 
 import AddTask from '../AddTaskComponent/AddTask';
+import TopBar from '../TopBarComponent/TopBar';
 
 function ProjectDetailsComponent() {
 
   const location = useLocation();
-  const {title,id,description} = location.state;
+  const {id,description} = location.state;
   
-  const {showFormsModal,setShowFormsModal,loggedInUser,invokeRoleChange} = useContext(AuthContext);
+  const {showFormsModal,setShowFormsModal,loggedInUser,invokeRoleChange,invokeProjectMenu,invokeStateUpdate} = useContext(AuthContext);
   const [showAddTasks,setShowAddTasks] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleAddMembers=()=>{
     setShowFormsModal(true);
@@ -28,16 +31,21 @@ function ProjectDetailsComponent() {
     setShowFormsModal(true);
     setShowAddTasks(true);
   }
+  const handleLogOut =()=>{
+    localStorage.removeItem('accessToken');
+    invokeStateUpdate(false);    
+    navigate("/Login");
+  }
+
+  invokeProjectMenu();
   return (
     <div>
-      {title}
       
-      <KanbanBoardComponent/>
+      <TopBar handleLogOut={handleLogOut} handleAddMembers={handleAddMembers} handleAddTask={handleAddTask} />
 
-      {loggedInUser && loggedInUser?.role=='Manager'?<button onClick={handleAddMembers}>Add Members</button>:null}
-      {loggedInUser && loggedInUser?.role=='Manager'?<button onClick={handleAddTask}>Assign Tasks</button>:null}
-      {!showAddTasks?<ModalComponent showModal={showFormsModal} popUpTitle="Add Members" popUpContent={<AddMemberComponent id={id}/>} handleCloseModal={handleCloseModal}/>:null}
-      {showAddTasks?<ModalComponent showModal={showFormsModal} popUpTitle="Assign Task" popUpContent={<AddTask/>} id={id} handleCloseModal={handleCloseModal}/> : null}
+      <KanbanBoardComponent id={id}/>
+     {!showAddTasks?<ModalComponent showModal={showFormsModal} popUpTitle="Add Members" popUpContent={<AddMemberComponent id={id}/>} handleCloseModal={handleCloseModal}/>
+      :<ModalComponent showModal={showFormsModal} popUpTitle="Assign Task" popUpContent={<AddTask id={id} handleSubmit={handleCloseModal}/> }  handleCloseModal={handleCloseModal}/> }
     </div>
   )
 }

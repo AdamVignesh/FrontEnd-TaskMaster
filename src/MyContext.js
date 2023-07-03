@@ -12,7 +12,10 @@ export const GlobalAuthStateProvider = ({children}) => {
     const [showFormsModal,setShowFormsModal] = useState(false);
     const [role,setRole] = useState(null);
     const [selectedOption, setSelectedOption] = useState('');
+    const [getTasks,setGetTasks] = useState(true);
 
+    const [showDashBoardMenu,setShowDashBoardMenu] = useState(false);
+    const [showProjectsMenu,setShowProjectsMenu] = useState(false);
 
     const getUserDataIfExists = async () => {
             const user = await getUserDetails();
@@ -31,7 +34,17 @@ export const GlobalAuthStateProvider = ({children}) => {
     const invokeRoleChange=(value)=>{
         setRole(value);
     }
-
+    const invokeDashboardMenu=()=>{
+        setShowProjectsMenu(false);
+        setShowDashBoardMenu(true);
+    }
+    const invokeProjectMenu=()=>{
+        setShowDashBoardMenu(false);
+        setShowProjectsMenu(true);
+    }
+    const invokeGetTasks=(value)=>{
+        setGetTasks(value);
+    }
     useEffect(()=>{
         // console.log("in effexr");
         getUserDataIfExists();
@@ -47,7 +60,13 @@ export const GlobalAuthStateProvider = ({children}) => {
         invokeProjects,
         InvokeProjectsToggle,
         invokeRoleChange,
+        invokeDashboardMenu,
+        invokeProjectMenu,
         role,
+        showDashBoardMenu,
+        showProjectsMenu,
+        getTasks,
+        invokeGetTasks
     }
 
     return (

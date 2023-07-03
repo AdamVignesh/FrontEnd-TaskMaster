@@ -10,7 +10,7 @@ function AddMemberComponent(props) {
     const [users,setUsers] = useState([]);
     const [showUsers,setShowUsers] = useState(false);
     const [selectedMembers,setSelectedMembers] = useState([]);
-    
+    const [projetId,setprojectId] = useState('');
     const {setShowFormsModal,role} = useContext(AuthContext);
 
     

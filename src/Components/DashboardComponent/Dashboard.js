@@ -18,7 +18,7 @@ import FormComponent from '../FormComponent/FormComponent';
 function Dashboard() {
   
     const navigate = useNavigate();
-    const {loggedInUser,isSignedIn,invokeProjects,invokeStateUpdate,showFormsModal,setShowFormsModal} = useContext(AuthContext);
+    const {loggedInUser,isSignedIn,invokeProjects,invokeStateUpdate,showFormsModal,setShowFormsModal,invokeDashboardMenu} = useContext(AuthContext);
     const [myProjects,setMyProjects] = useState([]);
     const [searchQuery,setSearchQuery] = useState();
     const [myProjectsForCache,setMyProjectsForCache] = useState([]);
@@ -101,16 +101,15 @@ function Dashboard() {
     setSearchQuery(e.target.value);
     debouncedSearch(e.target.value,myProjects,myProjectsForCache);
   }
+  invokeDashboardMenu();
 
 
   return(
     <div>
-      <TopBar imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName} onClick={handleLogOut}/>
+      <TopBar searchChange={handleSearchChange} handleAddProjectClick={handleAddProject} handleLogOut={handleLogOut} imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName}/>
 
       <div className="parent-container">
-        <ModalComponent showModal={showFormsModal} popUpTitle="Add Project" popUpContent={<FormComponent/>} handleCloseModal={()=>setShowFormsModal(false)}/>
-        <SideBar searchChange={handleSearchChange} handleAddProjectClick={handleAddProject} onClick={handleLogOut}/>
- 
+        <ModalComponent showModal={showFormsModal} popUpTitle="Add Project" popUpContent={<FormComponent/>} handleCloseModal={()=>setShowFormsModal(false)}/> 
         <div className="child-div child-div2">
         <Container>
           <Row>
