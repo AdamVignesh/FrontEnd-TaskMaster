@@ -115,7 +115,7 @@ function Dashboard() {
           <Row>
             {myProjects?.slice().reverse().map((item, index) => (
             <Col lg={6} md={6} sm={12}>
-                <CardComponent onClick={handleProjectClick} key={index}  id={item.project_id} title={item.project_Title} description={item.project_Description} />
+                <CardComponent onClick={handleProjectClick} key={index}  id={item.project_id} title={item.project_Title} description={item.project_Description} progress={item.project_Progress}/>
                 </Col>
                 ))}
           </Row>

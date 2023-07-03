@@ -18,6 +18,12 @@ import { AuthContext } from "../../MyContext";
 function KanbanBoardComponent(props) {
     
     const {invokeGetTasks,getTasks} = useContext(AuthContext);
+    const[updatedTemp,setUpdatedTemp] = useState([]);
+    const [assigned,setAssigned] = useState([]);
+    const [todo,setTodo] = useState([]);
+    const [inProgress,setInProgress] = useState([]);
+    const [done,setDone] = useState([]);
+
     const [columnsFromBackend,setColumnsFromBackend] = useState({
         "one": {
           name: "Assigned",
@@ -40,7 +46,7 @@ function KanbanBoardComponent(props) {
     
     const [columns, setColumns] = useState(columnsFromBackend);
 
-    const onDragEnd = (result, columns, setColumns) => {
+    const onDragEnd = async (result, columns, setColumns) => {
         if (!result.destination) return;
         const { source, destination } = result;
       
@@ -62,43 +68,104 @@ function KanbanBoardComponent(props) {
               items: destItems
             }
           });
-        } else {
-          const column = columns[source.droppableId];
-          const copiedItems = [...column.items];
-          const [removed] = copiedItems.splice(source.index, 1);
-          copiedItems.splice(destination.index, 0, removed);
-          setColumns({
-            ...columns,
-            [source.droppableId]: {
-              ...column,
-              items: copiedItems
-            }
-          });
+          
+          //axios call to update the values.
+          const statusUpdateURL = process.env.REACT_APP_UPDATE_TASK_STATUS;
+          const queryParam = {
+            updatedStatus: destColumn.name
+          } 
+          const response = await axios.put(`${statusUpdateURL}${removed.task_id}`, null,{
+            params: queryParam,
+          })
+          .then(res=>{
+            invokeGetTasks(true);
+            // getTasksOfThisProject();
+          })
+          .catch(error => {
+                console.log(error +" In task status")
+            });
+            console.log('Dragged card value:', removed.task_id , destColumn.name);
+
         }
+        //This else is for changing the order of values in the same column
+        //  else {
+        //   const column = columns[source.droppableId];
+        //   const copiedItems = [...column.items];
+        //   const [removed] = copiedItems.splice(source.index, 1);
+        //   copiedItems.splice(destination.index, 0, removed);
+        //   setColumns({
+        //     ...columns,
+        //     [source.droppableId]: {
+        //       ...column,
+        //       items: copiedItems
+        //     }
+        //   });
+        // }
       };
+      const calculateProgress= async()=>{
+        console.log("in calc");
+    
+        let totalTasks = updatedTemp.length;
+        let todoTasks = todo.length;
+        let inProgressTasks = inProgress.length;
+        let doneTasks = done.length;
+        
+        let doneTasksPercent = (doneTasks/totalTasks)*100;
+        let inProgressTasksPercent = (inProgressTasks/totalTasks)*50;
+        let todoTasksPercent = (todoTasks/totalTasks)*10;
+
+        doneTasksPercent = isNaN(doneTasksPercent) || typeof doneTasksPercent === 'undefined' ? 0 : doneTasksPercent;
+        inProgressTasksPercent = isNaN(inProgressTasksPercent) || typeof inProgressTasksPercent === 'undefined' ? 0 : inProgressTasksPercent;
+        todoTasksPercent = isNaN(todoTasksPercent) || typeof todoTasksPercent === 'undefined' ? 0 : todoTasksPercent;
+
+          
+          //progress = parseFloat(progress.toFixed(2));
+          let progress = (doneTasksPercent+inProgressTasksPercent+todoTasksPercent);
+          console.log(progress +"% done");
+
+          const queryParam = {
+            progress: progress
+          };
+          const UpdateProjectProgressURL = process.env.REACT_APP_UPDATE_PROJECT_PROGRESS ;
+          const response = await axios.put(`${UpdateProjectProgressURL}${props.id}`, null,{
+            params: queryParam,
+          })
+          .catch(error => {
+                console.log(error +" In project progress");
+            });
+        }
 
     const getTasksOfThisProject=async()=>{
-        console.log(props.id);
+        console.log("get tasks");
         const TasksOfThisProjectURL = process.env.REACT_APP_GET_TASKS_OF_PROJECT;
         try {
             const response = await axios.get(`${TasksOfThisProjectURL}${props.id}`)
             // projects = response.data;
             const temp = await response.data;
             console.log(temp);
-            const updatedTemp = 
-            temp?.map((item) => (
-                {
-                    ...item,
-                    draggableId:uuidv4()
-                }
-            ))
-            const updatedColumns = { ...columnsFromBackend };
+           
+            const updatedTempArray = temp?.map((item) => ({
+              ...item,
+              draggableId: uuidv4()
+            }));
+            
+              setUpdatedTemp(updatedTempArray);
+              setAssigned(updatedTempArray.filter(item => item.status === 'Assigned'));
+              setTodo(updatedTempArray.filter(item => item.status === 'To do'));
+              setInProgress(updatedTempArray.filter(item => item.status === 'In Progress'));
+              setDone(updatedTempArray.filter(item => item.status === 'Done'));
+            
 
-            updatedColumns.one.items = updatedTemp;
+            const updatedColumns = { ...columnsFromBackend };
+            updatedColumns.one.items = assigned;
+            updatedColumns.two.items = todo;
+            updatedColumns.three.items = inProgress;
+            updatedColumns.four.items = done;
+            
             setColumnsFromBackend(updatedColumns);
 
             invokeGetTasks(false);
-
+            calculateProgress();
           } 
           catch (error) {
             console.log("error in kanban board"+error);
@@ -109,6 +176,7 @@ function KanbanBoardComponent(props) {
     useEffect(() => {
         getTasksOfThisProject();
       },[getTasks]);
+
       console.log(columnsFromBackend);
     
       return (
