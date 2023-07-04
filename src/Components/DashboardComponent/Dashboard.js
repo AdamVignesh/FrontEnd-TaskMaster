@@ -13,6 +13,9 @@ import CardComponent from '../CardComponent/CardComponent';
 import { Col, Container, Row } from 'react-bootstrap';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import FormComponent from '../FormComponent/FormComponent';
+import { MDBContainer } from 'mdbreact';
+import "./scrollbar.css";
+
 
 
 function Dashboard() {
@@ -42,6 +45,7 @@ function Dashboard() {
 
   
   const extractedProjects = [];
+
   const getMyProjects = async () => {
     var projects =[];
       if(loggedInUser.role =="Manager")
@@ -70,7 +74,7 @@ function Dashboard() {
           console.log("in projects success");
           console.log(projects);
           setMyProjects(projects);
-          setMyProjectsForCache(projects);  
+          setMyProjectsForCache(projects); 
         } 
         catch (error) {
           console.log(error);
@@ -79,6 +83,7 @@ function Dashboard() {
         
       }
     }
+
   const handleProjectClick=()=>{
     alert("im in");
   }
@@ -110,19 +115,19 @@ function Dashboard() {
 
       <div className="parent-container">
         <ModalComponent showModal={showFormsModal} popUpTitle="Add Project" popUpContent={<FormComponent/>} handleCloseModal={()=>setShowFormsModal(false)}/> 
-        <div className="child-div child-div2">
+
+        <div className="scrollbar scrollbar-primary mt-5 mx-auto child-div child-div2">
         <Container>
           <Row>
             {myProjects?.slice().reverse().map((item, index) => (
-            <Col lg={6} md={6} sm={12}>
-                <CardComponent onClick={handleProjectClick} key={index}  id={item.project_id} title={item.project_Title} description={item.project_Description} progress={item.project_Progress}/>
+              <Col lg={6} md={6} sm={12}>
+                <CardComponent onClick={handleProjectClick} key={index}  id={item.project_id} title={item.project_Title} deadline={item.deadline} description={item.project_Description} progress={item.project_Progress}/>
                 </Col>
                 ))}
           </Row>
         </Container>
         </div>
-
-        <div className="child-div child-div3">Third Div (30%)</div>
+        <div className="mt-5 child-div child-div3">Third Div (30%)</div>
      </div>
     </div>
   )

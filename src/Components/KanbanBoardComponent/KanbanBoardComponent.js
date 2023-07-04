@@ -235,7 +235,6 @@ function KanbanBoardComponent(props) {
                                       }}
                                     >
                                       {item?.task_title}
-                                      {item?.draggableId}
                                     </div>
                                   );
                                 }}
