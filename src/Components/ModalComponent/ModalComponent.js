@@ -11,6 +11,11 @@ function ModalComponent(props) {
               {props.popUpContent}
             </Modal.Body>
             <Modal.Footer>
+              {props.bottomButton? 
+                   <Button variant="secondary" onClick={props.handleSubmit}>
+                      Sure
+                 </Button>
+                  :null}
               <Button variant="secondary" onClick={props.handleCloseModal}>
                 Close
               </Button>

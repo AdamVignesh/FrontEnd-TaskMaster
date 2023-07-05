@@ -1,75 +1,144 @@
-import React, { useContext, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { AuthContext } from '../../MyContext';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAdd } from '@fortawesome/free-solid-svg-icons';
 
 function FormComponent() {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [deadline, setDeadline] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [formErrors, setFormErrors] = useState({
+    title: '',
+    description: '',
+    deadline: '',
+  });
 
-    const {loggedInUser,InvokeProjectsToggle,setShowFormsModal} = useContext(AuthContext);
+  const { loggedInUser, InvokeProjectsToggle, setShowFormsModal } =
+    useContext(AuthContext);
 
-    const navigate = useNavigate();
-    // Handle form submission
-    // process.env.REACT_APP_BASE_URL;
-    const base_URL = process.env.REACT_APP_PROJECT_BASE_URL;
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const data={
-            Project_Title:title,
-            Project_Description:description,
-            Deadline:deadline,
-            User_Id: loggedInUser.id    
-        };
-        axios.post(base_URL,data).then((result)=>{   
-            setShowFormsModal(false);
-            InvokeProjectsToggle();
-           // navigate("/test");
-        }).catch((error)=>{
-            alert(error);
-            console.log(error);
-            // setShowModal(true);
-            // setPopUpTitle('Error')
-        })
+  const base_URL = process.env.REACT_APP_PROJECT_BASE_URL;
 
+  const validateForm = () => {
+    let isValid = true;
+    const errors = {
+      title: '',
+      description: '',
+      deadline: '',
+    };
+
+    if (title.trim() === '') {
+      isValid = false;
+      errors.title = 'Project title is required';
+    }
+
+    if (description.trim() === '') {
+      isValid = false;
+      errors.description = 'Description is required';
+    }
+
+    if (deadline.trim() === '') {
+      isValid = false;
+      errors.deadline = 'Deadline is required';
+    } else {
+      const selectedDate = new Date(deadline);
+      const currentDate = new Date();
+      currentDate.setHours(currentDate.getHours() + 3);
+      if (selectedDate < currentDate) {
+        isValid = false;
+        errors.deadline = 'Deadline must be greater than or equal to today';
+      }
+    }
+
+    setFormErrors(errors);
+    return isValid;
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const data = {
+      Project_Title: title,
+      Project_Description: description,
+      Deadline: deadline,
+      User_Id: loggedInUser.id,
+    };
+
+    axios
+      .post(base_URL, data)
+      .then((result) => {
+        setShowFormsModal(false);
+        InvokeProjectsToggle();
+      })
+      .catch((error) => {
+        alert(error);
+        console.log(error);
+      });
+  };
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="title">Project Title:</label>
-        <input
-          type="text"
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </div>
+    <Container>
+      <Row className="justify-content-center">
+        <Col md={6}>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="title">
+              <Form.Label>Project Title:</Form.Label>
+              <Form.Control
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                isInvalid={formErrors.title !== ''}
+                style={{ borderColor: '#9f5298' }}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.title}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-      <div>
-        <label htmlFor="description">Description:</label>
-        <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </div>
+            <Form.Group controlId="description">
+              <Form.Label>Description:</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                isInvalid={formErrors.description !== ''}
+                style={{ borderColor: '#9f5298' }}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.description}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-      <div>
-        <label htmlFor="deadline">Deadline:</label>
-        <input
-          type="date"
-          id="deadline"
-          value={deadline}
-          onChange={(e) => setDeadline(e.target.value)}
-        />
-      </div>
+            <Form.Group controlId="deadline">
+              <Form.Label>Deadline:</Form.Label>
+              <Form.Control
+                type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
+                isInvalid={formErrors.deadline !== ''}
+                style={{ borderColor: '#9f5298' }}
+              />
+              <Form.Control.Feedback type="invalid">
+                {formErrors.deadline}
+              </Form.Control.Feedback>
+            </Form.Group>
 
-      <button type="submit">Submit</button>
-    </form>
-  )
+            <div className="d-flex justify-content-center align-items-center m-1">
+              <Button className="w-50" style={{ backgroundColor: '#9f5298' }} type="submit">
+                Add <FontAwesomeIcon icon={faAdd} />
+              </Button>
+            </div>
+          </Form>
+        </Col>
+      </Row>
+    </Container>
+  );
 }
 
-export default FormComponent
+export default FormComponent;

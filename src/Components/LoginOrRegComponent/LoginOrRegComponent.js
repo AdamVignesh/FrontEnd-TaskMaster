@@ -42,7 +42,7 @@ function LoginOrRegComponent() {
     const [popUpTitle,setPopUpTitle] = useState();
     const [dpUrl,setDpUrl] = useState('');
 
-  const {role,invokeRoleChange} = useContext(AuthContext);
+  const {role,invokeGetPieChartDetails} = useContext(AuthContext);
 
 
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
@@ -102,6 +102,7 @@ function LoginOrRegComponent() {
                 setPopUpTitle('Success')
                 setPopUpContent('Successfully Logged In');
                 invokeStateUpdate(true);
+                invokeGetPieChartDetails(true);
                 navigate("/Dashboard");
             }).catch((error)=>{
                 setShowModal(true);

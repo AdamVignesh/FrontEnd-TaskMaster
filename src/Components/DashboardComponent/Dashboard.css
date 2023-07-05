@@ -24,3 +24,32 @@
     align-items: center;
     justify-content: space-between;
   }
+
+  .add-project-button {
+    position: fixed;  
+    bottom: 20px;
+    /* left:30px; */
+    width: 50px;
+    right: 20px;
+    transition: background-color 0.3s ease-in;
+  }
+
+  .add-project-button:hover {
+    transition: background-color 0.3s ease-out;
+  
+    width: 200px;
+  }
+
+  .card-hover {
+    cursor: pointer;
+  }
+
+  @media (max-width: 600px) {
+    .parent-container {
+      flex-direction: column-reverse;
+    }
+   
+    
+    
+  }
+  

@@ -13,6 +13,11 @@ export const GlobalAuthStateProvider = ({children}) => {
     const [role,setRole] = useState(null);
     const [selectedOption, setSelectedOption] = useState('');
     const [getTasks,setGetTasks] = useState(true);
+    const [projectProgress, setProjectProgress] = useState();
+    const [showAddTasks,setShowAddTasks] = useState(false);
+    const [getPieChartDetails,setGetPieChartDetails] = useState(true);
+    const [showEndProject, setShowEndProject] = useState(false);
+    const [isGetImages,setIsGetImages] = useState(true);
 
     const [showDashBoardMenu,setShowDashBoardMenu] = useState(false);
     const [showProjectsMenu,setShowProjectsMenu] = useState(false);
@@ -45,6 +50,13 @@ export const GlobalAuthStateProvider = ({children}) => {
     const invokeGetTasks=(value)=>{
         setGetTasks(value);
     }
+    const invokeShowAddTask=(value)=>{
+        setShowAddTasks(value);
+    }
+    const invokeGetPieChartDetails =(value)=>{
+        setGetPieChartDetails(value);
+    }
+    
     useEffect(()=>{
         // console.log("in effexr");
         getUserDataIfExists();
@@ -62,11 +74,21 @@ export const GlobalAuthStateProvider = ({children}) => {
         invokeRoleChange,
         invokeDashboardMenu,
         invokeProjectMenu,
+        invokeShowAddTask,
         role,
         showDashBoardMenu,
         showProjectsMenu,
         getTasks,
-        invokeGetTasks
+        invokeGetTasks,
+        setProjectProgress,
+        projectProgress,
+        showAddTasks,
+        getPieChartDetails,
+        invokeGetPieChartDetails,
+        showEndProject,
+        setShowEndProject,
+        isGetImages,
+        setIsGetImages,
     }
 
     return (

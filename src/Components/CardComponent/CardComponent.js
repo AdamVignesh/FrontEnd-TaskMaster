@@ -5,33 +5,35 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../MyContext';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle,faUserPlus,faTasks} from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from "react-bootstrap";
+
 
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-
+import './CardStyles.css';
 
 
 
 function CardComponent(props) {
 
   const navigate = useNavigate();
-  const {invokeGetTasks} = useContext(AuthContext);
+  const {invokeGetTasks,isGetImages,setIsGetImages,setProjectProgress,setShowFormsModal,invokeRoleChange,invokeShowAddTask,invokeProjects} = useContext(AuthContext);
   const[memberImages,setMemberImages] = useState([]);
-  const [isGetImages,setIsGetImages] = useState(true);
   const[daysLeft,setDaysLeft] = useState();
 
   const handleProjectClick=()=>{  
     invokeGetTasks(true);
-    navigate('/ProjectDetails',{state:{id:props.id ,title:props.title,description:props.description,}});
+    setProjectProgress(props.progress);
+    navigate('/ProjectDetails',{state:{id:props.id ,title:props.title,description:props.description}});
   }
 
   const getMemberImages = async()=>{
+    console.log("getting user images");
     const getMemberImagesURL = process.env.REACT_APP_GET_MEMBER_IMAGES_OF_PROJECT;
     try {
       const response = await axios.get(`${getMemberImagesURL}${props.id}`).then(res=>{
-        console.log(res.data.imageUrl);
+        console.log(res.data.imageUrl +"im image");
         setMemberImages(res.data.imageUrl);
         setIsGetImages(false);
       })
@@ -57,59 +59,89 @@ function CardComponent(props) {
   useEffect(()=>{
       getMemberImages();
       getRemainingDays();
-   },[isGetImages]);
+   },[isGetImages,invokeProjects]);
    
+
+
+   const handleAddMembers=()=>{
+    setShowFormsModal(true);
+  }
+
+  const handleCloseModal=()=>{
+    setShowFormsModal(false);
+     invokeRoleChange(null);
+     invokeShowAddTask(false);
+  }
+
+  const handleAddTask= ()=>{
+    setShowFormsModal(true);
+    invokeShowAddTask(true);
+  }
+
+
+
+
   return (
-    <Card onClick={handleProjectClick} border= "light" className='mb-4  border-2' >
-        <Card.Header className='d-flex justify-content-between'>
-          <div>
-          {props.title}
+    <Card onClick={handleProjectClick} border="light" className='mb-4  border-2 shadow card-hover' >
+        <Card.Header style={{backgroundColor:"#fff"}} className='d-flex justify-content-between'>
+          <div className="project-title">
+             <h5>{props.title}</h5> 
           </div>
           <div>
-          {memberImages.length <= 3 ? (
+            
+          {memberImages.length?memberImages.length <= 3 ? (
             memberImages.map((item, index) => (
               <img key={index} src={item} style={{ width: "30px", margin:"-3px" }} />
             ))
-          ) : (
+            ) : (
             <>
               {memberImages.slice(0, 3).map((item, index) => (
                 <img key={index} src={item} style={{ width: "30px",margin:"-3px" }} />
               ))}
                 <FontAwesomeIcon icon={faPlusCircle}/>
             </>
-)}
-
-
+            ):null}
           </div>
         </Card.Header>
         <Card.Body>
-          <Card.Title>
-          <div className="circle-progress-bar">
-          {/* <ProgressBar
-            now={props.progress}
-            label={`${props.progress}%`}
-            variant="info"
-            className="circle-progress-bar-inner"
-            srOnly
-          /> */}
-        <CircularProgressbar className='w-25'
-          value={props.progress}
-          text={`${props.progress}%`}
-          background
-          backgroundPadding={6}
-          styles={buildStyles({
-            backgroundColor: "#9f5298",
-            textColor: "#fff",
-            pathColor: "#fff",
-            trailColor: "transparent"
-          })}
-          
-      />
-        {/* <CircularProgressbar value={props.progress} text={`${props.progress}%`} className='w-25' /> */}
-    </div>
+          <Card.Title >
+           <div className="w-100 d-flex justify-content-between align-items-center">
+           <div>
+            {props.description}
+           </div>
+            <div className="circle-progress-bar" style={{width:"100px"}}>
+              {/* <ProgressBar
+                now={props.progress}
+                label={`${props.progress}%`}
+                variant="info"
+                className="circle-progress-bar-inner"
+                srOnly
+              /> */}
+            <CircularProgressbar 
+              value={props.progress}
+              text={`${props.progress}%`}
+              background
+              backgroundPadding={6}
+              styles={buildStyles({
+                backgroundColor: "#9f5298",
+                textColor: "#fff",
+                pathColor: "#fff",
+                trailColor: "transparent"
+              })}
+              />
+              
+            {/* <CircularProgressbar value={props.progress} text={`${props.progress}%`} className='w-25' /> */}
+            </div>
+            </div>       
           </Card.Title>
+
           <Card.Text>
-            {daysLeft}
+    <div className='flex-column'>
+        
+          <FontAwesomeIcon className='m-1' onClick={handleAddMembers} icon={faUserPlus}/>
+          <FontAwesomeIcon className='m-1' onClick={handleAddTask} icon={faTasks}/>
+        
+    </div>
           </Card.Text>
         </Card.Body>
       </Card>  

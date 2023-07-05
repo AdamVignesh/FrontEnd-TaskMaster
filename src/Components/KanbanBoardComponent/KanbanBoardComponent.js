@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from 'uuid';
 import { AuthContext } from "../../MyContext";
+import ModalComponent from "../ModalComponent/ModalComponent";
 
 // const itemsFromBackend = [
 //     { id: uuidv4(), content: "First task" },
@@ -17,7 +18,7 @@ import { AuthContext } from "../../MyContext";
   
 function KanbanBoardComponent(props) {
     
-    const {invokeGetTasks,getTasks} = useContext(AuthContext);
+    const {invokeGetTasks,getTasks,setProjectProgress,setShowEndProject,showFormsModal} = useContext(AuthContext);
     const[updatedTemp,setUpdatedTemp] = useState([]);
     const [assigned,setAssigned] = useState([]);
     const [todo,setTodo] = useState([]);
@@ -123,12 +124,25 @@ function KanbanBoardComponent(props) {
           let progress = (doneTasksPercent+inProgressTasksPercent+todoTasksPercent);
           console.log(progress +"% done");
 
+
           const queryParam = {
             progress: progress
           };
           const UpdateProjectProgressURL = process.env.REACT_APP_UPDATE_PROJECT_PROGRESS ;
           const response = await axios.put(`${UpdateProjectProgressURL}${props.id}`, null,{
             params: queryParam,
+          })
+          .then(()=>{
+              setProjectProgress(progress);
+            //   setShowFormsModal(true);
+              if(progress===100)
+              {
+                 setShowEndProject(true); 
+              }
+              else
+              {
+                setShowEndProject(false);
+              }
           })
           .catch(error => {
                 console.log(error +" In project progress");
@@ -202,7 +216,7 @@ function KanbanBoardComponent(props) {
                           ref={provided.innerRef}
                           style={{
                             background: snapshot.isDraggingOver
-                              ? "lightblue"
+                              ? "grey"
                               : "lightgrey",
                             padding: 4,
                             width: 250,
@@ -228,13 +242,13 @@ function KanbanBoardComponent(props) {
                                         margin: "0 0 8px 0",
                                         minHeight: "50px",
                                         backgroundColor: snapshot.isDragging
-                                          ? "#263B4A"
-                                          : "#456C86",
+                                          ? "#cc55cc"
+                                          : "#9f5298",
                                         color: "white",
                                         ...provided.draggableProps.style
                                       }}
                                     >
-                                      {item?.task_title}
+                                      <span style={{color:""}}>Title:</span>{item?.task_title}
                                     </div>
                                   );
                                 }}

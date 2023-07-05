@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Dropdown } from 'react-bootstrap'
+import { Button, Dropdown } from 'react-bootstrap'
 import DropdownComponent from '../DropdownComponent/DropdownComponent'
 import axios from 'axios';
 import { AuthContext } from '../../MyContext';
@@ -74,21 +74,48 @@ function AddMemberComponent(props) {
             return true;
         }
       }
+      const [isSelected, setIsSelected] = React.useState(false);
+
+      const handleImageClick = (user_id) => {
+        setIsSelected(!isSelected);
+        handleNameClick(user_id);
+      };
 
   return (
     <div>
         <DropdownComponent showManagerRole='false' dropdownDisplay="Choose Role" getUsersWithRole={getUsersWithRole}/>
         {roleCheck()?users.map((item, index) =>(
-            <p onClick={()=>handleNameClick(item.id)}>{item.userName}</p>
+           <div className='m-1'style={{ display: 'inline-block' }}>
+           <img
+             src={item.imgUrl}
+             alt={item.name}
+             style={{
+               width: '50px',
+               cursor: 'pointer', 
+               border: selectedMembers.includes(item.id) ? '2px solid green' : 'none', 
+               borderRadius: '50%', 
+             }}
+             
+             onClick={()=>{handleImageClick(item.id)}}
+           />
+           <h5>{item.userName}</h5>
+         </div>
+     
+            
         )):`No Users left in the selected ${role} role`}
 
             
             
         {selectedMembers.length? 
-        <div>
-            {selectedMembers}
-            <button onClick={handleAddToProject}>Add to project</button>
-        </div>
+            <div className='mt-5'>
+            <Button
+                variant="primary"
+                onClick={handleAddToProject}
+                style={{ backgroundColor: '#9f5298',width:"200px" }}
+                >
+                Add to project
+                </Button>      
+            </div>
         :null}
     </div>
   )

@@ -10,18 +10,20 @@ import TopBar from '../TopBarComponent/TopBar';
 import './Dashboard.css';
 import SideBar from '../SideBarComponent/SideBar';
 import CardComponent from '../CardComponent/CardComponent';
-import { Col, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import FormComponent from '../FormComponent/FormComponent';
-import { MDBContainer } from 'mdbreact';
+import { faPlus, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import "./scrollbar.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Chart from 'react-google-charts';
 
 
 
 function Dashboard() {
   
     const navigate = useNavigate();
-    const {loggedInUser,isSignedIn,invokeProjects,invokeStateUpdate,showFormsModal,setShowFormsModal,invokeDashboardMenu} = useContext(AuthContext);
+    const {loggedInUser,setIsGetImages,invokeGetPieChartDetails,invokeProjects,invokeStateUpdate,showFormsModal,setShowFormsModal,invokeDashboardMenu} = useContext(AuthContext);
     const [myProjects,setMyProjects] = useState([]);
     const [searchQuery,setSearchQuery] = useState();
     const [myProjectsForCache,setMyProjectsForCache] = useState([]);
@@ -36,6 +38,7 @@ function Dashboard() {
     const handleAddProject =() =>{
       setShowFormsModal(true);
     }
+
     useEffect(()=>{
       if(loggedInUser && loggedInUser.id)
       {
@@ -44,8 +47,6 @@ function Dashboard() {
   },[loggedInUser,invokeProjects]);
 
   
-  const extractedProjects = [];
-
   const getMyProjects = async () => {
     var projects =[];
       if(loggedInUser.role =="Manager")
@@ -58,6 +59,7 @@ function Dashboard() {
           console.log(projects.projects);
           setMyProjects(projects.projects);
           setMyProjectsForCache(projects.projects);
+          filterPieChartDetails(projects.projects);
         } 
         catch (error) {
           console.log(error);
@@ -75,6 +77,7 @@ function Dashboard() {
           console.log(projects);
           setMyProjects(projects);
           setMyProjectsForCache(projects); 
+          filterPieChartDetails(projects);
         } 
         catch (error) {
           console.log(error);
@@ -108,10 +111,55 @@ function Dashboard() {
   }
   invokeDashboardMenu();
 
+                  
+  const [buttonText, setButtonText] = useState(<FontAwesomeIcon icon={faPlus}/>);
+
+  const handleButtonHover = () => {
+    setButtonText('Add Project');
+  };
+
+  const handleButtonLeave = () => {
+    setButtonText(<FontAwesomeIcon icon={faPlus}/>);
+  };
+
+  const [completedProjectsCount, setCompletedProjectsCount] = useState(0);
+  const [nearingTheEndProjectsCount, setNearingTheEndProjectsCount] = useState(0);
+  const [midWayProjectsCount, setMidWayProjectsCount] = useState(0);
+  const [initialStateProjectsCount, setInitialStateProjectsCount] = useState(0);
+
+
+    var data = [
+    ["Status", "No. of projects"],
+    ["Finishing stage",nearingTheEndProjectsCount],
+    ["Half Way",midWayProjectsCount],
+    ["Initial Stage", initialStateProjectsCount],
+    ["Done", completedProjectsCount],
+  ];
+
+
+  const filterPieChartDetails=(Projects)=>{
+    console.log("in pie chart");
+    // console.log(object)
+    const completedProjects = Projects.filter((project) => project.project_Progress === 100);
+    const nearingTheEndProjects = Projects.filter((project) => project.project_Progress >= 70);
+    const midWayProjects = Projects.filter((project) => project.project_Progress >= 40 && project.project_Progress < 70);
+    const initialStateProjects = Projects.filter((project) => project.project_Progress < 40);
+
+    setCompletedProjectsCount(completedProjects.length);
+    setNearingTheEndProjectsCount(nearingTheEndProjects.length);
+    setMidWayProjectsCount(midWayProjects.length);
+    setInitialStateProjectsCount(initialStateProjects.length);
+    console.log(data +'data');
+  }
+
+  const options = {
+    title: "My Projects Analysis",
+    is3D: true,
+  };
 
   return(
     <div>
-      <TopBar searchChange={handleSearchChange} handleAddProjectClick={handleAddProject} handleLogOut={handleLogOut} imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName}/>
+      <TopBar searchChange={handleSearchChange}  handleAddProjectClick={handleAddProject} handleLogOut={handleLogOut} imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName}/>
 
       <div className="parent-container">
         <ModalComponent showModal={showFormsModal} popUpTitle="Add Project" popUpContent={<FormComponent/>} handleCloseModal={()=>setShowFormsModal(false)}/> 
@@ -121,13 +169,26 @@ function Dashboard() {
           <Row>
             {myProjects?.slice().reverse().map((item, index) => (
               <Col lg={6} md={6} sm={12}>
+                {setIsGetImages(true)}
                 <CardComponent onClick={handleProjectClick} key={index}  id={item.project_id} title={item.project_Title} deadline={item.deadline} description={item.project_Description} progress={item.project_Progress}/>
                 </Col>
                 ))}
+                <Button onClick={handleAddProject} onMouseEnter={handleButtonHover} onMouseLeave={handleButtonLeave} className="add-project-button rounded-5" variant="dark">
+                {buttonText}
+                </Button>
           </Row>
         </Container>
         </div>
-        <div className="mt-5 child-div child-div3">Third Div (30%)</div>
+        <div className="mt-5 child-div child-div3">
+          <Chart
+            chartType="PieChart"
+            data={data}
+            options={options}
+            width={"100%"}
+            height={"400px"}
+          />
+          </div>
+         
      </div>
     </div>
   )
