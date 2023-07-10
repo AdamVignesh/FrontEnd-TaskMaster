@@ -88,7 +88,7 @@ const schedulerData = [
       <DayView
 
 startDayHour={9}
-        endDayHour={24}
+        endDayHour={17}
       />
       <Appointments />
 

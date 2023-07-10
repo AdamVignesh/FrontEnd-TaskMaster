@@ -49,7 +49,6 @@ function AddMemberComponent(props) {
             members:selectedMembers,        
         };
         axios.post(AddMembersURL,data).then((result)=>{   
-            alert("added successfully");
             setShowFormsModal(false);
           }).catch((error)=>{
             console.log(error);
