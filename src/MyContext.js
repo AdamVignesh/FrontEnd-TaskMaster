@@ -89,6 +89,7 @@ export const GlobalAuthStateProvider = ({children}) => {
         setShowEndProject,
         isGetImages,
         setIsGetImages,
+        setShowDashBoardMenu,
     }
 
     return (

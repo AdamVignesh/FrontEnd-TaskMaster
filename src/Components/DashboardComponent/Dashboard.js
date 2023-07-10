@@ -159,7 +159,7 @@ function Dashboard() {
 
   return(
     <div>
-      <TopBar searchChange={handleSearchChange}  handleAddProjectClick={handleAddProject} handleLogOut={handleLogOut} imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName}/>
+      <TopBar showSearch={true} searchChange={handleSearchChange}  handleAddProjectClick={handleAddProject} handleLogOut={handleLogOut} imageUrl={loggedInUser?.imgUrl} name={loggedInUser?.userName}/>
 
       <div className="parent-container">
         <ModalComponent showModal={showFormsModal} popUpTitle="Add Project" popUpContent={<FormComponent/>} handleCloseModal={()=>setShowFormsModal(false)}/> 
@@ -167,15 +167,21 @@ function Dashboard() {
         <div className="scrollbar scrollbar-primary mt-5 mx-auto child-div child-div2">
         <Container>
           <Row>
+            {myProjects.length?null:
+            <div className='d-flex flex-column justify-content-center align-items-center'>
+              <h3 style={{alignItems:"center"}}>No projects to display</h3>
+              <img style={{width:"300px"}} src='waiting.svg'/>
+            </div>}
             {myProjects?.slice().reverse().map((item, index) => (
               <Col lg={6} md={6} sm={12}>
                 {setIsGetImages(true)}
                 <CardComponent onClick={handleProjectClick} key={index}  id={item.project_id} title={item.project_Title} deadline={item.deadline} description={item.project_Description} progress={item.project_Progress}/>
                 </Col>
                 ))}
+                {loggedInUser?.role=="Manager"?
                 <Button onClick={handleAddProject} onMouseEnter={handleButtonHover} onMouseLeave={handleButtonLeave} className="add-project-button rounded-5" variant="dark">
                 {buttonText}
-                </Button>
+                </Button> :null}
           </Row>
         </Container>
         </div>

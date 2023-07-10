@@ -12,13 +12,14 @@ import { ProgressBar } from "react-bootstrap";
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import './CardStyles.css';
+import { isLoggedIn } from '../../myMethods';
 
 
 
 function CardComponent(props) {
 
   const navigate = useNavigate();
-  const {invokeGetTasks,isGetImages,setIsGetImages,setProjectProgress,setShowFormsModal,invokeRoleChange,invokeShowAddTask,invokeProjects} = useContext(AuthContext);
+  const {invokeGetTasks,isGetImages,setIsGetImages,setProjectProgress,setShowFormsModal,invokeRoleChange,invokeShowAddTask,invokeProjects,loggedInUser} = useContext(AuthContext);
   const[memberImages,setMemberImages] = useState([]);
   const[daysLeft,setDaysLeft] = useState();
 
@@ -136,12 +137,14 @@ function CardComponent(props) {
           </Card.Title>
 
           <Card.Text>
-    <div className='flex-column'>
-        
-          <FontAwesomeIcon className='m-1' onClick={handleAddMembers} icon={faUserPlus}/>
-          <FontAwesomeIcon className='m-1' onClick={handleAddTask} icon={faTasks}/>
-        
-    </div>
+            {loggedInUser?.role=="Manager"?
+                <div className='flex-column'>
+                    
+                      <FontAwesomeIcon className='m-1' onClick={handleAddMembers} icon={faUserPlus}/>
+                      <FontAwesomeIcon className='m-1' onClick={handleAddTask} icon={faTasks}/>
+                    
+                </div>
+            :null}
           </Card.Text>
         </Card.Body>
       </Card>  

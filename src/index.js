@@ -11,6 +11,7 @@ import UnProtected from './Components/UnProtected';
 import { GlobalAuthStateProvider } from './MyContext';
 import Test from './Components/test';
 import SelectedProjectComponent from './Components/ProjectDetailsComponent/ProjectDetailsComponent';
+import Calendar from './Components/CalendarComponent/Calendar';
 
 
 const router = createBrowserRouter([
@@ -33,8 +34,8 @@ const router = createBrowserRouter([
       </UnProtected>
   },
   {
-    path:"/Test",
-    element: <Test/>
+    path:"/Calendar",
+    element: <Calendar/>
   },
   {
     path:"/ProjectDetails",

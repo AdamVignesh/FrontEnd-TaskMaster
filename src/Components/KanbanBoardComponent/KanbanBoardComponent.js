@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthContext } from "../../MyContext";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import { Col, Row } from "react-bootstrap";
+import { isLoggedIn } from "../../myMethods";
 
 // const itemsFromBackend = [
 //     { id: uuidv4(), content: "First task" },
@@ -19,7 +20,7 @@ import { Col, Row } from "react-bootstrap";
   
 function KanbanBoardComponent(props) {
     
-    const {invokeGetTasks,getTasks,setProjectProgress,setShowEndProject} = useContext(AuthContext);
+    const {invokeGetTasks,getTasks,setProjectProgress,setShowEndProject,loggedInUser} = useContext(AuthContext);
     const[updatedTemp,setUpdatedTemp] = useState([]);
     const [assigned,setAssigned] = useState([]);
     const [todo,setTodo] = useState([]);
@@ -154,7 +155,15 @@ function KanbanBoardComponent(props) {
         console.log("get tasks");
         const TasksOfThisProjectURL = process.env.REACT_APP_GET_TASKS_OF_PROJECT;
         try {
-            const response = await axios.get(`${TasksOfThisProjectURL}${props.id}`)
+            let response ='';
+            if(loggedInUser?.role == "Manager")
+            {
+                response = await axios.get(`${TasksOfThisProjectURL}${props.id}`)
+            }
+            else
+            {
+                response = await axios.get(`${TasksOfThisProjectURL}tasksOfUser${props.id}?userId=${loggedInUser?.id}`)
+            }
             // projects = response.data;
             const temp = await response.data;
             console.log(temp);

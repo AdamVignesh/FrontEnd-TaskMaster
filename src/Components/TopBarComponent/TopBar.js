@@ -21,7 +21,7 @@ import './TopBar.css';
 function TopBar(props) {
 
     const navigate = useNavigate();
-    const {loggedInUser,showEndProject,showProjectsMenu,showDashBoardMenu,projectProgress} = useContext(AuthContext);
+    const {loggedInUser,showEndProject,showProjectsMenu,showDashBoardMenu,setShowDashBoardMenu} = useContext(AuthContext);
   
   return (
     <>
@@ -29,7 +29,7 @@ function TopBar(props) {
         <Navbar key={expand} expand={expand} className="bg-body-tertiary mb-3">
           <Container fluid>
             <Navbar.Brand>Task Master</Navbar.Brand>
-            {showDashBoardMenu?<InputGroup className="me-auto searchBar">
+            {props.showSearch?<InputGroup className="me-auto searchBar">
               <FormControl
                 type="text"
                 onChange={props.searchChange}
@@ -55,11 +55,11 @@ function TopBar(props) {
                   <h5>Hey, <span style={{color:"#9f5298"}}> {loggedInUser?.userName} </span> </h5>
                   {/* <Nav.Link href="#action1">Home</Nav.Link> */}
                   
-                  {showProjectsMenu?<Button variant='primary' onClick={()=>{navigate("/Dashboard")}}>Dashboard</Button>:null}
+                  {props.fromCalendar || showDashBoardMenu || showProjectsMenu?<Button variant='primary' onClick={()=>{navigate("/Dashboard")}}>Dashboard</Button>:null}
                   {showProjectsMenu && loggedInUser?.role=='Manager'?<Button variant='primary' onClick={props.handleAddMembers}>Add Members</Button>:null}
                   {showProjectsMenu && loggedInUser?.role=='Manager'?<Button variant='primary' onClick={props.handleAddTask}>Assign Tasks</Button>:null}
                   {showProjectsMenu && loggedInUser?.role == 'Manager'&& showEndProject?<Button variant='primary' onClick={props.handleEndProject}>End Project</Button>:null}
-                  
+                  {showProjectsMenu || showDashBoardMenu? <Button onClick={()=>{navigate("/Calendar")}}>Calendar</Button>:null}
                   <Button variant='danger' onClick={props.handleLogOut}>
                       <FontAwesomeIcon icon={faSignOutAlt} />
                   </Button>
