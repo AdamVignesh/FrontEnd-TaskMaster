@@ -107,7 +107,7 @@ function LoginOrRegComponent() {
             }).catch((error)=>{
                 setShowModal(true);
                 setPopUpTitle('Error')
-                setPopUpContent('Invalid Login');
+                setPopUpContent('Invalid Login or Try verifying your mail');
             })
         }
     }
@@ -193,7 +193,7 @@ function LoginOrRegComponent() {
         console.log(result+" result");
           setShowModal(true);
           setPopUpTitle('Success')
-          setPopUpContent('User Registered');
+          setPopUpContent('User Registered. Kindly verify your email');
           if(!showModal)
           {
             window.location.reload()

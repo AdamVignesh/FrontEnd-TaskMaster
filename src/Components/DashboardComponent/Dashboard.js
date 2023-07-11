@@ -19,7 +19,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Chart from 'react-google-charts';
 
 
-
 function Dashboard() {
   
     const navigate = useNavigate();

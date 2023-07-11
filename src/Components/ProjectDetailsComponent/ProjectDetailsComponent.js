@@ -6,13 +6,12 @@ import AddMemberComponent from '../AddMemberComponent/AddMemberComponent';
 import KanbanBoardComponent from '../KanbanBoardComponent/KanbanBoardComponent'; 
 import AddTask from '../AddTaskComponent/AddTask';
 import TopBar from '../TopBarComponent/TopBar';
-import { Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
 
 function ProjectDetailsComponent() {
 
   const location = useLocation();
-  const {id,description} = location.state;
+  const {id} = location.state;
   const {showFormsModal,setShowFormsModal,invokeGetTasks,invokeRoleChange,invokeProjectMenu,invokeStateUpdate,invokeShowAddTask,showAddTasks} = useContext(AuthContext);
   
   const [showProjectEndConfirm,setShowProjectEndConfirm] = useState(false);

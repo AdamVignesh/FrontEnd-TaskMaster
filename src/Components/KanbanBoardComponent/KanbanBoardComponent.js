@@ -3,9 +3,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { v4 as uuidv4 } from 'uuid';
 import { AuthContext } from "../../MyContext";
-import ModalComponent from "../ModalComponent/ModalComponent";
-import { Col, Row } from "react-bootstrap";
-import { isLoggedIn } from "../../myMethods";
 
 // const itemsFromBackend = [
 //     { id: uuidv4(), content: "First task" },
