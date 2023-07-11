@@ -261,7 +261,11 @@ function KanbanBoardComponent(props) {
                                             ...provided.draggableProps.style,
                                           }}
                                         >
-                                          <span style={{ color: "" }}>Title:</span>{item?.task_title}
+                                                {/* {JSON.stringify(item)} */}
+                                            <div className="d-flex justify-content-between">
+                                                Title: {item?.task_title}
+                                                <img style={{width:"30px", borderRadius:"50%"}} src={item?.user.imgUrl}/>
+                                            </div>
                                         </div>
                                       );
                                     }}
